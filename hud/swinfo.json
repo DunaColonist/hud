@@ -1,0 +1,21 @@
+{
+  "mod_id": "hud",
+  "author": "dunacolonist",
+  "name": "HUD : Head Up Display",
+  "description": "",
+  "source": "https://github.com/huder/hud",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "id":  "SpaceWarp",
+      "version": {
+        "min": "0.4.0",
+        "max": "*"
+      }
+    }
+  ],
+  "ksp2_version": {
+    "min": "0.1.0",
+    "max": "*"
+  }
+}

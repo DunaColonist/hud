@@ -1,0 +1,10 @@
+hudProject/bin/*
+hudProject/obj/*
+
+Backup/*
+Debug/*
+Release/*
+
+external_dlls/*
+
+.vs/*
