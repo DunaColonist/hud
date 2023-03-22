@@ -30,7 +30,10 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
     private void OnGUI()
     {
-        _gui.OnGUI();
+        if (_gui is not null)
+        {
+            _gui.OnGUI();
+        }
     }
 
 
