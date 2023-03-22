@@ -12,6 +12,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 {
     private HudConfig _config;
     private HudGui _gui;
+    private HudDrawing drawing;
 
     public override void OnInitialized()
     {
@@ -20,6 +21,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
         _config = new HudConfig(Config);
         _gui = new HudGui(SpaceWarpMetadata, _config);
+        drawing = new HudDrawing();
 
         RegisterAllHarmonyPatchesInProject();
 
@@ -38,6 +40,10 @@ public class hudPlugin : BaseSpaceWarpPlugin
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
         );
+        Camera.onPostRender = (Camera.CameraCallback)System.Delegate.Combine(
+            Camera.onPostRender,
+            new Camera.CameraCallback(OnCameraPostRender)
+        );
     }
 
     public virtual void OnDisable()
@@ -45,6 +51,10 @@ public class hudPlugin : BaseSpaceWarpPlugin
         Camera.onPreRender = (Camera.CameraCallback) System.Delegate.Remove(
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
+        );
+        Camera.onPostRender = (Camera.CameraCallback)System.Delegate.Remove(
+            Camera.onPostRender,
+            new Camera.CameraCallback(OnCameraPostRender)
         );
     }
 
@@ -58,7 +68,12 @@ public class hudPlugin : BaseSpaceWarpPlugin
         {
             return;
         }
-        HudDrawing.DrawHud(_config, cam);
+        drawing.DrawHud(_config, cam);
+    }
+
+    private void OnCameraPostRender(Camera cam)
+    {
+        HudDrawing.OnPostRender(cam);
     }
 
     private void RegisterAllHarmonyPatchesInProject()

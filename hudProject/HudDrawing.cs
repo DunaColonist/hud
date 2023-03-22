@@ -1,25 +1,40 @@
 ﻿using KSP.Sim.impl;
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace hud
 {
     internal class HudDrawing
     {
+        public static void OnPostRender(Camera cam)
+        {
+            DrawCommand.OnPostRenderBuiltInRP(cam);
+        }
+
         // Documentation available at : https://acegikmo.com/shapes/docs
-        public static void DrawHud(HudConfig config, UnityEngine.Camera cam)
+        public void DrawHud(HudConfig config, UnityEngine.Camera cam)
         {
             if (!config._hudIsEnabled.Value)
             {
                 return;
             }
-            using (Draw.Command(cam))
+            using (Draw.Command(cam, CameraEvent.AfterForwardAlpha))
             {
                 Draw.ResetMatrix();
 
                 var vessel = KSP.Game.GameManager.Instance.Game.ViewController.GetActiveSimVessel();
+                if (vessel is null)
+                {
+                    return;
+                }
 
                 var simulationObjectView = KSP.Game.GameManager.Instance.Game.SpaceSimulation.ModelViewMap.FromModel(vessel.SimulationObject);
+                if (simulationObjectView is null)
+                {
+                    return;
+                }
+
                 var radius = simulationObjectView.Vessel.BoundingSphere.radius * 200 / 100;
 
                 NavballColors colors = new();
@@ -32,7 +47,7 @@ namespace hud
             }
         }
 
-        private static void DrawTracking(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
+        private void DrawTracking(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
         {
             var drawing = new TrackingDrawing(position, radius);
             var coord = new LocalCoordinates(vessel);
@@ -56,7 +71,7 @@ namespace hud
             drawing.DrawSelection(coord.maneuverDirection, colors.maneuver);
         }
 
-        private static void DrawSphere(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
+        private void DrawSphere(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
         {
             var coord = new LocalCoordinates(vessel);
 
