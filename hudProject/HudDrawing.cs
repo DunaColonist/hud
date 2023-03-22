@@ -83,7 +83,7 @@ namespace hud
 
             new GraduatedCircle(position, coord.north, coord.east, radius,
                 new Color[] { colors.horizonEdge, colors.horizonEdge, colors.horizonEdge, colors.horizonEdge },
-                new Color[] { colors.north, colors.east, colors.south, colors.west },
+                new Color[] { colors.east, colors.north, colors.west, colors.south },
                 false
             );
         }
