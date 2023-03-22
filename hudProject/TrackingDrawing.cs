@@ -32,8 +32,8 @@ namespace hud
         {
             var scaledDirection = direction.normalized * radius;
 
-            Draw.Torus(position + scaledDirection, direction, radius / 40, 10, color);
-            Draw.Torus(position - scaledDirection, direction, radius / 50, 10, color);
+            Draw.Torus(position + scaledDirection * 1.01f, direction, radius / 25, 5, color);
+            Draw.Torus(position - scaledDirection * 1.01f, direction, radius / 50, 5, color);
         }
 
         public void DrawSelection(Vector3? direction, Color color)
@@ -44,8 +44,8 @@ namespace hud
             }
             var scaledDirection = direction.Value.normalized * radius;
 
-            Draw.Torus(position + scaledDirection, direction.Value, radius / 20, 10, color);
-            Draw.Torus(position - scaledDirection, direction.Value, radius / 30, 10, color);
+            Draw.Torus(position + scaledDirection * 0.99f, direction.Value, radius / 25, 5, color);
+            Draw.Torus(position - scaledDirection * 0.99f, direction.Value, radius / 50, 5, color);
         }
     }
 }
