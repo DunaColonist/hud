@@ -42,15 +42,16 @@ namespace hud
                 Draw.TorusRadiusSpace = ThicknessSpace.Meters;
                 Draw.LineThicknessSpace = ThicknessSpace.Pixels;
 
-                DrawTracking(simulationObjectView.position, radius, vessel, colors);
-                DrawSphere(simulationObjectView.position, radius, vessel, colors);
+                var coord = new LocalCoordinates(vessel);
+
+                DrawTracking(coord, radius, vessel, colors);
+                DrawSphere(coord, radius, vessel, colors);
             }
         }
 
-        private void DrawTracking(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
+        private void DrawTracking(LocalCoordinates coord, float radius, VesselComponent vessel, NavballColors colors)
         {
-            var drawing = new TrackingDrawing(position, radius);
-            var coord = new LocalCoordinates(vessel);
+            var drawing = new TrackingDrawing(coord.centerOfMass, radius);
             var situation = vessel.Situation;
 
             if (situation == VesselSituations.Flying)
@@ -71,17 +72,17 @@ namespace hud
             drawing.DrawSelection(coord.maneuverDirection, colors.maneuver);
         }
 
-        private void DrawSphere(Vector3 position, float radius, VesselComponent vessel, NavballColors colors)
+        private void DrawSphere(LocalCoordinates coor, float radius, VesselComponent vessel, NavballColors colors)
         {
             var coord = new LocalCoordinates(vessel);
 
-            new GraduatedCircle(position, coord.sky, coord.horizontalHeading, radius,
+            new GraduatedCircle(coord.centerOfMass, coord.sky, coord.horizontalHeading, radius,
                 new Color[] { colors.sky, colors.sky, colors.ground, colors.ground },
                 new Color[] { colors.ground, colors.sky, colors.ground, colors.ground },
                 true
             );
 
-            new GraduatedCircle(position, coord.north, coord.east, radius,
+            new GraduatedCircle(coord.centerOfMass, coord.north, coord.east, radius,
                 new Color[] { colors.horizonEdge, colors.horizonEdge, colors.horizonEdge, colors.horizonEdge },
                 new Color[] { colors.east, colors.north, colors.west, colors.south },
                 false

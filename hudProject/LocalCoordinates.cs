@@ -4,6 +4,8 @@ namespace hud
 {
     internal class LocalCoordinates
     {
+        public readonly Vector3d centerOfMass;
+
         public readonly Vector3d north;
         public readonly Vector3d east;
         public readonly Vector3d sky;
@@ -26,6 +28,8 @@ namespace hud
         {
             var telemetry = vessel._telemetryComponent;
             var frame = vessel.transform?.coordinateSystem;
+
+            centerOfMass = frame.ToLocalPosition(vessel.CenterOfMass);
 
             north = frame.ToLocalVector(telemetry.HorizonNorth).normalized;
             east = frame.ToLocalVector(telemetry.HorizonEast).normalized;
