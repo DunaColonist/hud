@@ -1,4 +1,5 @@
-﻿using KSP.Sim.impl;
+﻿using hud.coordinates;
+using KSP.Sim.impl;
 using Shapes;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -13,7 +14,7 @@ namespace hud
         }
 
         // Documentation available at : https://acegikmo.com/shapes/docs
-        public void DrawHud(HudConfig config, UnityEngine.Camera cam)
+        public void DrawHud(HudConfig config, Camera cam)
         {
             if (!config._hudIsEnabled.Value)
             {
@@ -54,35 +55,32 @@ namespace hud
             var drawing = new TrackingDrawing(coord.centerOfMass, radius);
             var situation = vessel.Situation;
 
-            if (situation == VesselSituations.Flying)
+            // TODO find  better way to not display a random prograde
+            if (situation != VesselSituations.PreLaunch && situation != VesselSituations.Landed && situation != VesselSituations.Splashed)
             {
-                drawing.DrawHeading(coord.surfaceMovementPrograde, colors.prograde);
+                drawing.DrawHeading(coord.movement.prograde, colors.prograde);
             }
 
-            if (situation == VesselSituations.SubOrbital || situation == VesselSituations.Orbiting || situation == VesselSituations.Escaping)
-            {
-                drawing.DrawHeading(coord.orbitMovementPrograde, colors.prograde);
-                drawing.DrawReference(coord.orbitMovementNormal, colors.normal);
-                drawing.DrawReference(coord.orbitMovementRadialIn, colors.radial);
-            }
+            drawing.DrawReference(coord.movement.normal, colors.normal);
+            drawing.DrawReference(coord.movement.radialIn, colors.radial);
 
-            drawing.DrawHeading(coord.up, colors.up, true);
+            drawing.DrawHeading(coord.attitude.up, colors.up, true);
 
-            drawing.DrawSelection(coord.targetDirection, colors.target);
-            drawing.DrawSelection(coord.maneuverDirection, colors.maneuver);
+            drawing.DrawSelection(coord.direction.target, colors.target);
+            drawing.DrawSelection(coord.direction.maneuver, colors.maneuver);
         }
 
         private void DrawSphere(LocalCoordinates coor, float radius, VesselComponent vessel, NavballColors colors)
         {
             var coord = new LocalCoordinates(vessel);
 
-            new GraduatedCircle(coord.centerOfMass, coord.sky, coord.horizontalHeading, radius,
+            new GraduatedCircle(coord.centerOfMass, coord.horizon.sky, coord.horizontalHeading, radius,
                 new Color[] { colors.sky, colors.sky, colors.ground, colors.ground },
                 new Color[] { colors.ground, colors.sky, colors.ground, colors.ground },
                 true
             );
 
-            new GraduatedCircle(coord.centerOfMass, coord.north, coord.east, radius,
+            new GraduatedCircle(coord.centerOfMass, coord.horizon.north, coord.horizon.east, radius,
                 new Color[] { colors.horizonEdge, colors.horizonEdge, colors.horizonEdge, colors.horizonEdge },
                 new Color[] { colors.east, colors.north, colors.west, colors.south },
                 false
