@@ -71,11 +71,22 @@ public class hudPlugin : BaseSpaceWarpPlugin
         {
             return;
         }
-        drawing.DrawHud(_config, cam);
+        try
+        {
+            drawing.DrawHud(_config, cam);
+        } catch (Exception e)
+        {
+            Logger.LogError($"Error during drawing of hud : {e.GetType()} {e.Message}");
+        }
+        
     }
 
     private void OnCameraPostRender(Camera cam)
     {
+        if (!_config._hudIsEnabled.Value)
+        {
+            return;
+        }
         HudDrawing.OnPostRender(cam);
     }
 
