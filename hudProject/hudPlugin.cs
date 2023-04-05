@@ -1,5 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using KSP.Game;
+using KSP.Messages;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
 using UnityEngine;
@@ -14,6 +16,8 @@ public class hudPlugin : BaseSpaceWarpPlugin
     private HudGui _gui;
     private HudDrawing drawing;
 
+    private Boolean hudIsRequired;
+
     public override void OnInitialized()
     {
         Logger.LogInfo("OnInitialized : start");
@@ -24,6 +28,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
         drawing = new HudDrawing();
 
         RegisterAllHarmonyPatchesInProject();
+        RegisterDetectionOfHudNeed();
 
         Logger.LogInfo("OnInitialized : end");
     }
@@ -71,6 +76,10 @@ public class hudPlugin : BaseSpaceWarpPlugin
         {
             return;
         }
+        if (!hudIsRequired)
+        {
+            return;
+        }
         try
         {
             drawing.DrawHud(_config, cam);
@@ -83,7 +92,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
     private void OnCameraPostRender(Camera cam)
     {
-        if (!_config._hudIsEnabled.Value)
+        if (!hudIsRequired)
         {
             return;
         }
@@ -93,5 +102,22 @@ public class hudPlugin : BaseSpaceWarpPlugin
     private void RegisterAllHarmonyPatchesInProject()
     {
         Harmony.CreateAndPatchAll(typeof(hudPlugin).Assembly);
+    }
+
+    private void RegisterDetectionOfHudNeed()
+    {
+        Game.Messages.Subscribe<GameStateChangedMessage>(msg =>
+        {
+            var message = (GameStateChangedMessage)msg;
+
+            if (message.CurrentState == GameState.FlightView)
+            {
+                hudIsRequired = true;
+            }
+            else if (message.PreviousState == GameState.FlightView)
+            {
+                hudIsRequired = false;
+            }
+        });
     }
 }

@@ -4,7 +4,7 @@
   "name": "HUD : Head Up Display",
   "description": "",
   "source": "https://github.com/huder/hud",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "dependencies": [
     {
       "id":  "SpaceWarp",
