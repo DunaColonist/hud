@@ -9,10 +9,10 @@
         <Product>HUD : Head Up Display</Product>
         <Description></Description>
         <Version>0.3.2</Version>
-        <RestoreAdditionalProjectSources>
-            https://api.nuget.org/v3/index.json;
-            https://nuget.bepinex.dev/v3/index.json
-        </RestoreAdditionalProjectSources>
+		<RestoreAdditionalProjectSources>
+			https://api.nuget.org/v3/index.json;
+			https://nuget.spacewarp.org/v3/index.json
+		</RestoreAdditionalProjectSources>
         <RootNamespace>hud</RootNamespace>
         <ModId Condition="'$(ModId)'==''">hud</ModId>
     </PropertyGroup>
@@ -34,7 +34,7 @@
         <PackageReference Include="BepInEx.Core" Version="5.*"/>
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*"/>
         <PackageReference Include="HarmonyX" Version="2.10.1"/>
-        <PackageReference Include="SpaceWarp" Version="0.4.0"/>
+        <PackageReference Include="SpaceWarp" Version="1.1.1"/>
         <PackageReference Include="UnityEngine.Modules" Version="2020.3.33" IncludeAssets="compile"/>
     </ItemGroup>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
