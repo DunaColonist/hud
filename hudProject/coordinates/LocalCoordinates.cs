@@ -12,6 +12,7 @@ namespace hud.coordinates
         public readonly Movement movement;
         public readonly Direction direction;
 
+        public readonly Vector3d heading;
         public readonly Vector3d horizontalHeading;
 
         public LocalCoordinates(VesselComponent vessel)
@@ -67,10 +68,12 @@ namespace hud.coordinates
             // TODO fix/improve that in order to make sense
             if (telemetry.SurfaceHorizontalSpeed > 1)
             {
-                horizontalHeading = Vector3d.Exclude(horizon.sky, movement.prograde).normalized;
+                heading = movement.prograde;
+                horizontalHeading = Vector3d.Exclude(horizon.sky, heading).normalized;
             } else
             {
-                horizontalHeading = Vector3d.Exclude(horizon.sky, attitude.forward).normalized;
+                heading = attitude.forward;
+                horizontalHeading = Vector3d.Exclude(horizon.sky, heading).normalized;
             }
 
             Vector3d? target = null;

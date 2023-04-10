@@ -6,6 +6,8 @@ using UnityEngine;
 using KSP.UI.Binding;
 using BepInEx.Configuration;
 
+using hud.coordinates;
+
 namespace hud
 {
     internal class HudGui
@@ -67,6 +69,22 @@ namespace hud
 
             ConfigToggle(_config._hudIsEnabled);
 
+            var vessel = KSP.Game.GameManager.Instance.Game.ViewController.GetActiveSimVessel();
+            if (vessel is not null)
+            {
+                var coord = new LocalCoordinates(vessel);
+
+                var horizontalAngle = Vector3d.SignedAngle(coord.horizontalHeading, coord.horizon.north, -coord.horizon.sky);
+                AngleDisplay("Horizontal", ((int)horizontalAngle).ToString());
+
+                var verticalAngle = Vector3d.SignedAngle(coord.heading, coord.horizontalHeading, -Vector3d.Cross(coord.horizontalHeading, coord.horizon.sky));
+                AngleDisplay("Vertical", ((int)verticalAngle).ToString());
+            } else
+            {
+                AngleDisplay("Horizontal", "N/A");
+                AngleDisplay("Vertical", "N/A");
+            }
+
             GUILayout.Space(10);
 
             GUILayout.EndVertical();
@@ -83,6 +101,14 @@ namespace hud
         public void ConfigToggle(ConfigEntry<bool> config)
         {
             config.Value = GUILayout.Toggle( config.Value, new GUIContent(config.Definition.Key, config.Description.Description));
+        }
+
+        public void AngleDisplay(string orientation, string angle)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(orientation + " : ");
+            GUILayout.Label(angle);
+            GUILayout.EndHorizontal();
         }
 
         private Texture2D GetIcon(ModInfo modInfo)
