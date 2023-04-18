@@ -1,4 +1,6 @@
 ﻿using hud.coordinates;
+using hud.drawing;
+using hud.input;
 using KSP.Sim.impl;
 using Shapes;
 using UnityEngine;
@@ -14,7 +16,7 @@ namespace hud
         }
 
         // Documentation available at : https://acegikmo.com/shapes/docs
-        public void DrawHud(HudConfig config, Camera cam)
+        public void DrawHud(HudConfig config, AttitudeControlOverride controlOverride, Camera cam)
         {
             if (!config._hudIsEnabled.Value)
             {
@@ -45,12 +47,12 @@ namespace hud
 
                 var coord = new LocalCoordinates(vessel);
 
-                DrawTracking(coord, radius, vessel, colors);
+                DrawTracking(coord, radius, vessel, controlOverride, colors);
                 DrawSphere(coord, radius, vessel, colors);
             }
         }
 
-        private void DrawTracking(LocalCoordinates coord, float radius, VesselComponent vessel, NavballColors colors)
+        private void DrawTracking(LocalCoordinates coord, float radius, VesselComponent vessel, AttitudeControlOverride controlOverride, NavballColors colors)
         {
             var drawing = new TrackingDrawing(coord.centerOfMass, radius);
             var situation = vessel.Situation;
@@ -64,7 +66,14 @@ namespace hud
             drawing.DrawReference(coord.movement.normal, colors.normal);
             drawing.DrawReference(coord.movement.radialIn, colors.radial);
 
-            drawing.DrawHeading(coord.attitude.up, colors.up, true);
+            if (controlOverride.IsEnabled)
+            {
+                Vector3 controlVector = coord.ControlVector(controlOverride);
+                drawing.DrawHeading(controlVector, Color.blue, true);
+            } else
+            {
+                drawing.DrawHeading(coord.attitude.up, colors.up, true);
+            }
 
             drawing.DrawSelection(coord.direction.target, colors.target);
             drawing.DrawSelection(coord.direction.maneuver, colors.maneuver);

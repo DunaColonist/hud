@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace hud
+namespace hud.drawing
 {
     internal class NavballColors
     {
@@ -29,7 +29,7 @@ namespace hud
         private static Color color100(int r, int g, int b, double a = 1)
         {
             var scale = 100f;
-            return new Color(r / scale, g / scale, b / scale, (float) a);
+            return new Color(r / scale, g / scale, b / scale, (float)a);
         }
     }
 }

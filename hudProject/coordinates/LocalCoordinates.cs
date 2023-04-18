@@ -1,5 +1,7 @@
-﻿using KSP.Sim;
+﻿using hud.input;
+using KSP.Sim;
 using KSP.Sim.impl;
+using UnityEngine;
 
 namespace hud.coordinates
 {
@@ -14,6 +16,9 @@ namespace hud.coordinates
 
         public readonly Vector3d heading;
         public readonly Vector3d horizontalHeading;
+
+        public readonly int horizontalAngle;
+        public readonly int verticalAngle;
 
         public LocalCoordinates(VesselComponent vessel)
         {
@@ -88,7 +93,29 @@ namespace hud.coordinates
                 maneuver = frame.ToLocalVector(telemetry.ManeuverDirection).normalized;
             }
             direction = new Direction(target: target, maneuver: maneuver);
+
+            horizontalAngle = (int) Vector3d.SignedAngle(horizontalHeading, horizon.north, -horizon.sky);
+            verticalAngle = (int) Vector3d.SignedAngle(heading, horizontalHeading, -Vector3d.Cross(horizontalHeading, horizon.sky));
         }
 
+        public Vector3 ControlVector(AttitudeControlOverride controlOverride)
+        {
+            var horizontalAngle = convert(controlOverride.HorizontalAngle);
+            var horizontal =
+                Math.Cos(horizontalAngle) * horizon.north +
+                Math.Sin(-horizontalAngle) * horizon.east;
+
+            var verticalAngle = convert(controlOverride.VerticalAngle);
+            var vertical =
+                Math.Cos(verticalAngle) * horizontal +
+                Math.Sin(-verticalAngle) * horizon.sky;
+
+            return vertical.normalized;
+        }
+
+        private double convert(double angle)
+        {
+            return -angle * (2 * Math.PI) / 360;
+        }
     }
 }

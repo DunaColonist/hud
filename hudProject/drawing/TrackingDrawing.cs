@@ -1,7 +1,7 @@
 using Shapes;
 using UnityEngine;
 
-namespace hud
+namespace hud.drawing
 {
     // TODO clean up magic numbers
     internal class TrackingDrawing
@@ -15,7 +15,7 @@ namespace hud
             this.radius = radius;
         }
 
-        public void DrawHeading(Vector3? direction, Color color, Boolean invert = false)
+        public void DrawHeading(Vector3? direction, Color color, bool invert = false)
         {
             if (direction is null)
             {

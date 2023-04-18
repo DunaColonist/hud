@@ -4,25 +4,24 @@ using SpaceWarp.API.UI.Appbar;
 using SpaceWarp.API.Mods.JSON;
 using UnityEngine;
 using KSP.UI.Binding;
-using BepInEx.Configuration;
-
-using hud.coordinates;
+using hud.input;
+using hud.gui;
 
 namespace hud
 {
     internal class HudGui
     {
         private string _text;
-
         private string _buttonId;
 
         private bool _isWindowOpen;
         private Rect _windowRect;
 
         private HudConfig _config;
+        private AttitudeControlOverride _controlOverride;
 
         // XXX should we only use ModInfo and not MyPluginInfo ?
-        public HudGui(ModInfo modInfo, HudConfig config)
+        public HudGui(ModInfo modInfo, HudConfig config, AttitudeControlOverride controlOverride)
         {
             _text = MyPluginInfo.PLUGIN_NAME;
             var modId = MyPluginInfo.PLUGIN_GUID;
@@ -30,6 +29,7 @@ namespace hud
             RegisterFlightAppBarButton(modInfo, _text, _buttonId);
 
             _config = config;
+            _controlOverride = controlOverride;
         }
 
         private void CloseWindows()
@@ -57,58 +57,18 @@ namespace hud
 
         private void FillWindow(int windowID)
         {
+
             if (GUI.Button(new Rect(_windowRect.width - 18, 2, 16, 16), "x"))
             {
                 CloseWindows();
             }
-               
-
-            GUILayout.BeginVertical();
-
-            GUILayout.Space(10);
-
-            ConfigToggle(_config._hudIsEnabled);
-
-            var vessel = KSP.Game.GameManager.Instance.Game.ViewController.GetActiveSimVessel();
-            if (vessel is not null)
-            {
-                var coord = new LocalCoordinates(vessel);
-
-                var horizontalAngle = Vector3d.SignedAngle(coord.horizontalHeading, coord.horizon.north, -coord.horizon.sky);
-                AngleDisplay("Horizontal", ((int)horizontalAngle).ToString());
-
-                var verticalAngle = Vector3d.SignedAngle(coord.heading, coord.horizontalHeading, -Vector3d.Cross(coord.horizontalHeading, coord.horizon.sky));
-                AngleDisplay("Vertical", ((int)verticalAngle).ToString());
-            } else
-            {
-                AngleDisplay("Horizontal", "N/A");
-                AngleDisplay("Vertical", "N/A");
-            }
-
-            GUILayout.Space(10);
-
-            GUILayout.EndVertical();
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 500));
+            new MainGUI().Build(_config, _controlOverride);
         }
 
         public void Update()
         {
             _isWindowOpen = false;
             GameObject.Find(_buttonId)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(false);
-        }
-
-        public void ConfigToggle(ConfigEntry<bool> config)
-        {
-            config.Value = GUILayout.Toggle( config.Value, new GUIContent(config.Definition.Key, config.Description.Description));
-        }
-
-        public void AngleDisplay(string orientation, string angle)
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(orientation + " : ");
-            GUILayout.Label(angle);
-            GUILayout.EndHorizontal();
         }
 
         private Texture2D GetIcon(ModInfo modInfo)

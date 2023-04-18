@@ -9,7 +9,7 @@ namespace hud
         public HudConfig(ConfigFile config)
         {
             const string section = "Settings";
-            _hudIsEnabled = config.Bind<bool>(section, "Enable hud", true, "Enable display of hud");
+            _hudIsEnabled = config.Bind<bool>(section, "Enable display of hud", true, "When disabled, the hud is not displayed.");
         }
     }
 }

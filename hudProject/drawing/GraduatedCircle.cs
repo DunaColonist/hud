@@ -1,7 +1,7 @@
 ﻿using Shapes;
 using UnityEngine;
 
-namespace hud
+namespace hud.drawing
 {
     // XX can not draw a partial Torus only a partial Disc
     // but Disc is limited too because it is 2D form : so it has no 3D thickness...
@@ -26,7 +26,7 @@ namespace hud
         private readonly Vector3 position;
         private readonly float radius;
 
-        public GraduatedCircle(Vector3 position, Vector3 up, Vector3 right, float radius, Color[] quarterColors, Color[] tickColors,  bool invertTick)
+        public GraduatedCircle(Vector3 position, Vector3 up, Vector3 right, float radius, Color[] quarterColors, Color[] tickColors, bool invertTick)
         {
             this.position = position;
             this.radius = radius;
@@ -64,7 +64,8 @@ namespace hud
                 if (i == 0)
                 {
                     Draw.Line(start, start - radial * radius * Length.bigTick * tickDirection, Thickness.bigTick, bigTickColor);
-                } else if (i == steps / 2)
+                }
+                else if (i == steps / 2)
                 {
                     Draw.Line(start, start - radial * radius * Length.mediumTick * tickDirection, Thickness.mediumTick, color);
                 }

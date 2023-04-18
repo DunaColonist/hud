@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using hud.input;
 using KSP.Game;
 using KSP.Messages;
 using SpaceWarp;
@@ -13,8 +14,9 @@ namespace hud;
 public class hudPlugin : BaseSpaceWarpPlugin
 {
     private HudConfig _config;
+    private AttitudeControlOverride _controlOverride;
     private HudGui _gui;
-    private HudDrawing drawing;
+    private HudDrawing _drawing;
 
     private Boolean hudIsRequired;
 
@@ -24,8 +26,9 @@ public class hudPlugin : BaseSpaceWarpPlugin
         base.OnInitialized();
 
         _config = new HudConfig(Config);
-        _gui = new HudGui(SpaceWarpMetadata, _config);
-        drawing = new HudDrawing();
+        _controlOverride = new AttitudeControlOverride();
+        _gui = new HudGui(SpaceWarpMetadata, _config, _controlOverride);
+        _drawing = new HudDrawing();
 
         RegisterAllHarmonyPatchesInProject();
         RegisterDetectionOfHudNeed();
@@ -82,7 +85,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
         }
         try
         {
-            drawing.DrawHud(_config, cam);
+            _drawing.DrawHud(_config, _controlOverride, cam);
         } catch (Exception e)
         {
             Logger.LogError($"Error during drawing of hud : {e.GetType()} {e.Message}");
