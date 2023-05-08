@@ -8,3 +8,4 @@ Release/*
 external_dlls/*
 
 .vs/*
+.idea/*
