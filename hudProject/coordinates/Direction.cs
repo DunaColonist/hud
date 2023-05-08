@@ -1,14 +1,13 @@
-﻿namespace hud.coordinates
-{
-    internal class Direction
-    {
-        public readonly Vector3d? target;
-        public readonly Vector3d? maneuver;
+﻿namespace Hud.Coordinates;
 
-        public Direction(Vector3d? target, Vector3d? maneuver)
-        {
-            this.target = target;
-            this.maneuver = maneuver;
-        }
+internal class Direction
+{
+    public Vector3d? Target { get; }
+    public Vector3d? Maneuver { get; }
+
+    public Direction(Vector3d? Target, Vector3d? Maneuver)
+    {
+        this.Target = Target;
+        this.Maneuver = Maneuver;
     }
 }

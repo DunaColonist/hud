@@ -1,90 +1,89 @@
-﻿using SpaceWarp.API.Assets;
+﻿using Hud.Gui;
+using Hud.Input;
+using KSP.UI.Binding;
+using SpaceWarp.API.Assets;
+using SpaceWarp.API.Mods.JSON;
 using SpaceWarp.API.UI;
 using SpaceWarp.API.UI.Appbar;
-using SpaceWarp.API.Mods.JSON;
 using UnityEngine;
-using KSP.UI.Binding;
-using hud.input;
-using hud.gui;
 
-namespace hud
+namespace Hud;
+
+internal class HudGui
 {
-    internal class HudGui
+    private string _text;
+    private string _buttonId;
+
+    private bool _isWindowOpen;
+    private Rect _windowRect;
+
+    private HudConfig _config;
+    private AttitudeControlOverride _controlOverride;
+
+    // XXX should we only use ModInfo and not MyPluginInfo ?
+    public HudGui(ModInfo modInfo, HudConfig config, AttitudeControlOverride controlOverride)
     {
-        private string _text;
-        private string _buttonId;
+        _text = MyPluginInfo.PLUGIN_NAME;
+        var modId = MyPluginInfo.PLUGIN_GUID;
+        _buttonId = "BTN-" + modId + "-Flight";
+        RegisterFlightAppBarButton(modInfo, _text, _buttonId);
 
-        private bool _isWindowOpen;
-        private Rect _windowRect;
+        _config = config;
+        _controlOverride = controlOverride;
+    }
 
-        private HudConfig _config;
-        private AttitudeControlOverride _controlOverride;
+    private void CloseWindows()
+    {
+        _isWindowOpen = false;
+        GameObject.Find(_buttonId)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(false);
+    }
 
-        // XXX should we only use ModInfo and not MyPluginInfo ?
-        public HudGui(ModInfo modInfo, HudConfig config, AttitudeControlOverride controlOverride)
+    public void OnGUI()
+    {
+        GUI.skin = Skins.ConsoleSkin;
+
+        if (_isWindowOpen)
         {
-            _text = MyPluginInfo.PLUGIN_NAME;
-            var modId = MyPluginInfo.PLUGIN_GUID;
-            _buttonId = "BTN-" + modId + "-Flight";
-            RegisterFlightAppBarButton(modInfo, _text, _buttonId);
+            _windowRect = GUILayout.Window(
+                GUIUtility.GetControlID(FocusType.Passive),
+                _windowRect,
+                FillWindow,
+                _text,
+                GUILayout.Height(50),
+                GUILayout.Width(350)
+            );
+        }
+    }
 
-            _config = config;
-            _controlOverride = controlOverride;
+    private void FillWindow(int windowID)
+    {
+        if (GUI.Button(new Rect(_windowRect.width - 18, 2, 16, 16), "x"))
+        {
+            CloseWindows();
         }
 
-        private void CloseWindows()
+        new MainGUI().Build(_config, _controlOverride);
+    }
+
+    public void Update()
+    {
+        _isWindowOpen = false;
+        GameObject.Find(_buttonId)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(false);
+    }
+
+    private Texture2D GetIcon(ModInfo modInfo)
+    {
+        return AssetManager.GetAsset<Texture2D>($"{modInfo.ModID}/images/icon.png");
+    }
+
+    private void RegisterFlightAppBarButton(ModInfo modInfo, string text, string id)
+    {
+        _buttonId = id;
+        Appbar.RegisterAppButton(text, id, GetIcon(modInfo), isOpen =>
         {
-            _isWindowOpen = false;
-            GameObject.Find(_buttonId)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(false);
+            _isWindowOpen = isOpen;
+            GameObject.Find(id)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(isOpen);
         }
-
-        public void OnGUI()
-        {
-            GUI.skin = Skins.ConsoleSkin;
-
-            if (_isWindowOpen)
-            {
-                _windowRect = GUILayout.Window(
-                    GUIUtility.GetControlID(FocusType.Passive),
-                    _windowRect,
-                    FillWindow,
-                    _text,
-                    GUILayout.Height(50),
-                    GUILayout.Width(350)
-                );
-            }
-        }
-
-        private void FillWindow(int windowID)
-        {
-
-            if (GUI.Button(new Rect(_windowRect.width - 18, 2, 16, 16), "x"))
-            {
-                CloseWindows();
-            }
-            new MainGUI().Build(_config, _controlOverride);
-        }
-
-        public void Update()
-        {
-            _isWindowOpen = false;
-            GameObject.Find(_buttonId)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(false);
-        }
-
-        private Texture2D GetIcon(ModInfo modInfo)
-        {
-            return AssetManager.GetAsset<Texture2D>($"{modInfo.ModID}/images/icon.png");
-        }
-
-        private void RegisterFlightAppBarButton(ModInfo modInfo, string text, string id)
-        {
-            _buttonId = id;
-            Appbar.RegisterAppButton(text, id, GetIcon(modInfo), isOpen =>
-            {
-                _isWindowOpen = isOpen;
-                GameObject.Find(id)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(isOpen);
-            }
-           );
-        }
+       );
     }
 }

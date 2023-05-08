@@ -1,16 +1,15 @@
-﻿namespace hud.coordinates
-{
-    internal class Horizon
-    {
-        public readonly Vector3d north;
-        public readonly Vector3d east;
-        public readonly Vector3d sky;
+﻿namespace Hud.Coordinates;
 
-        public Horizon(Vector3d north, Vector3d east, Vector3d sky)
-        {
-            this.north = north;
-            this.east = east;
-            this.sky = sky;
-        }
+internal class Horizon
+{
+    public Vector3d North { get; }
+    public Vector3d East { get; }
+    public Vector3d Sky { get; }
+
+    public Horizon(Vector3d North, Vector3d East, Vector3d Sky)
+    {
+        this.North = North;
+        this.East = East;
+        this.Sky = Sky;
     }
 }

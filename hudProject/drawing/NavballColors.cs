@@ -1,35 +1,34 @@
 ﻿using UnityEngine;
 
-namespace hud.drawing
+namespace Hud.Drawing;
+
+internal class NavballColors
 {
-    internal class NavballColors
+    public Color Background { get; } = new Color(1, 1, 1, 0.01f);
+
+    public Color Sky { get; } = Color100(21, 64, 78);
+    public Color Ground { get; } = Color100(67, 42, 19);
+
+    public Color North { get; } = Color100(80, 16, 0);
+    public Color South { get; } = Color100(2, 36, 0);
+    public Color East { get; } = Color100(8, 20, 54);
+    public Color West { get; } = Color100(8, 20, 54);
+
+    public Color HorizonEdge { get; } = Color.grey;
+    public Color HorizonFill { get; } = new Color(Color.grey.r, Color.grey.g, Color.grey.b, 0.05f);
+
+    public Color Up { get; } = Color100(80, 66, 0);
+
+    public Color Prograde { get; } = Color100(0, 100, 40);
+    public Color Normal { get; } = Color100(47, 14, 47);
+    public Color Radial { get; } = Color100(1, 54, 54);
+
+    public Color Target { get; } = Color.grey;
+    public Color Maneuver { get; } = Color100(100, 82, 59);
+
+    private static Color Color100(int r, int g, int b, double a = 1)
     {
-        public readonly Color background = new Color(1, 1, 1, 0.01f);
-
-        public readonly Color sky = color100(21, 64, 78);
-        public readonly Color ground = color100(67, 42, 19);
-
-        public readonly Color north = color100(80, 16, 0);
-        public readonly Color south = color100(2, 36, 0);
-        public readonly Color east = color100(8, 20, 54);
-        public readonly Color west = color100(8, 20, 54);
-
-        public readonly Color horizonEdge = Color.grey;
-        public readonly Color horizonFill = new Color(Color.grey.r, Color.grey.g, Color.grey.b, 0.05f);
-
-        public readonly Color up = color100(80, 66, 0);
-
-        public readonly Color prograde = color100(0, 100, 40);
-        public readonly Color normal = color100(47, 14, 47);
-        public readonly Color radial = color100(1, 54, 54);
-
-        public readonly Color target = Color.grey;
-        public readonly Color maneuver = color100(100, 82, 59);
-
-        private static Color color100(int r, int g, int b, double a = 1)
-        {
-            var scale = 100f;
-            return new Color(r / scale, g / scale, b / scale, (float)a);
-        }
+        var scale = 100f;
+        return new Color(r / scale, g / scale, b / scale, (float)a);
     }
 }

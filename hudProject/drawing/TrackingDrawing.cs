@@ -1,59 +1,63 @@
 using Shapes;
 using UnityEngine;
 
-namespace hud.drawing
+namespace Hud.Drawing;
+
+// TODO clean up magic numbers
+internal class TrackingDrawing
 {
-    // TODO clean up magic numbers
-    internal class TrackingDrawing
+    private readonly Vector3 position;
+    private readonly float radius;
+
+    public TrackingDrawing(Vector3 position, float radius)
     {
-        private readonly Vector3 position;
-        private readonly float radius;
+        this.position = position;
+        this.radius = radius;
+    }
 
-        public TrackingDrawing(Vector3 position, float radius)
+    public void DrawHeading(Vector3? direction, Color color, bool invert = false)
+    {
+        if (direction is null)
         {
-            this.position = position;
-            this.radius = radius;
+            return;
         }
 
-        public void DrawHeading(Vector3? direction, Color color, bool invert = false)
+        var scaledDirection = direction.Value.normalized * radius;
+
+        var inversion = invert ? -1 : 1;
+
+        Draw.Line(position, position + scaledDirection, 1, color);
+        Draw.Cone(position + scaledDirection + (direction.Value * inversion * radius / 10), -direction.Value * inversion, radius / 25, radius / 10, color);
+
+        Draw.LineDashed(position, position - scaledDirection, 1, color);
+        Draw.Cone(position - scaledDirection - (direction.Value * inversion * radius / 20), direction.Value * inversion, radius / 50, radius / 20, color);
+    }
+
+    public void DrawReference(Vector3? direction, Color color)
+    {
+        if (direction is null)
         {
-            if (direction is null)
-            {
-                return;
-            }
-            var scaledDirection = direction.Value.normalized * radius;
-
-            var inversion = invert ? -1 : 1;
-
-            Draw.Line(position, position + scaledDirection, 1, color);
-            Draw.Cone(position + scaledDirection + direction.Value * inversion * radius / 10, -direction.Value * inversion, radius / 25, radius / 10, color);
-
-            Draw.LineDashed(position, position - scaledDirection, 1, color);
-            Draw.Cone(position - scaledDirection - direction.Value * inversion * radius / 20, direction.Value * inversion, radius / 50, radius / 20, color);
+            return;
         }
 
-        public void DrawReference(Vector3? direction, Color color)
-        {
-            if (direction is null)
-            {
-                return;
-            }
-            var scaledDirection = direction.Value.normalized * radius;
+        var scaledDirection = direction.Value.normalized * radius;
+        var offset = scaledDirection * 1.01f;
 
-            Draw.Torus(position + scaledDirection * 1.01f, direction.Value, radius / 25, 5, color);
-            Draw.Torus(position - scaledDirection * 1.01f, direction.Value, radius / 50, 5, color);
+        Draw.Torus(position + offset, direction.Value, radius / 25, 5, color);
+        Draw.Torus(position - offset, direction.Value, radius / 50, 5, color);
+    }
+
+    public void DrawSelection(Vector3? direction, Color color)
+    {
+        if (direction is null)
+        {
+            return;
         }
 
-        public void DrawSelection(Vector3? direction, Color color)
-        {
-            if (direction is null)
-            {
-                return;
-            }
-            var scaledDirection = direction.Value.normalized * radius;
+        var scaledDirection = direction.Value.normalized * radius;
+        var offset = scaledDirection * 0.99f;
 
-            Draw.Torus(position + scaledDirection * 0.99f, direction.Value, radius / 25, 5, color);
-            Draw.Torus(position - scaledDirection * 0.99f, direction.Value, radius / 50, 5, color);
-        }
+        Draw.Torus(position + offset, direction.Value, radius / 25, 5, color);
+        Draw.Torus(position - offset, direction.Value, radius / 50, 5, color);
     }
 }

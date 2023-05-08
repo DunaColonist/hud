@@ -1,24 +1,24 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using hud.input;
+using Hud.Input;
 using KSP.Game;
 using KSP.Messages;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
 using UnityEngine;
 
-namespace hud;
+namespace Hud;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
-public class hudPlugin : BaseSpaceWarpPlugin
+public class HudPlugin : BaseSpaceWarpPlugin
 {
     private HudConfig _config;
     private AttitudeControlOverride _controlOverride;
     private HudGui _gui;
     private HudDrawing _drawing;
 
-    private Boolean hudIsRequired;
+    private bool hudIsRequired;
 
     public override void OnInitialized()
     {
@@ -44,10 +44,9 @@ public class hudPlugin : BaseSpaceWarpPlugin
         }
     }
 
-
     public virtual void OnEnable()
     {
-        Camera.onPreRender = (Camera.CameraCallback) System.Delegate.Combine(
+        Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Combine(
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
         );
@@ -59,7 +58,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
     public virtual void OnDisable()
     {
-        Camera.onPreRender = (Camera.CameraCallback) System.Delegate.Remove(
+        Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Remove(
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
         );
@@ -75,22 +74,25 @@ public class hudPlugin : BaseSpaceWarpPlugin
         {
             return;
         }
+
         if (cam.name != "FlightCameraPhysics_Main")
         {
             return;
         }
+
         if (!hudIsRequired)
         {
             return;
         }
+
         try
         {
             _drawing.DrawHud(_config, _controlOverride, cam);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogError($"Error during drawing of hud : {e.GetType()} {e.Message}");
         }
-        
     }
 
     private void OnCameraPostRender(Camera cam)
@@ -99,12 +101,13 @@ public class hudPlugin : BaseSpaceWarpPlugin
         {
             return;
         }
+
         HudDrawing.OnPostRender(cam);
     }
 
     private void RegisterAllHarmonyPatchesInProject()
     {
-        Harmony.CreateAndPatchAll(typeof(hudPlugin).Assembly);
+        Harmony.CreateAndPatchAll(typeof(HudPlugin).Assembly);
     }
 
     private void RegisterDetectionOfHudNeed()

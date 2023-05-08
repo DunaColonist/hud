@@ -1,21 +1,20 @@
-﻿namespace hud.coordinates
+﻿namespace Hud.Coordinates;
+
+internal class Movement
 {
-    internal class Movement
+    public Vector3d Prograde { get; }
+    public Vector3d? Normal { get; }
+    public Vector3d? RadialIn { get; }
+
+    public Movement(Vector3d Prograde)
     {
-        public readonly Vector3d prograde;
-        public readonly Vector3d? normal;
-        public readonly Vector3d? radialIn;
+        this.Prograde = Prograde;
+    }
 
-        public Movement(Vector3d prograde)
-        {
-            this.prograde = prograde;
-        }
-
-        public Movement(Vector3d prograde, Vector3d normal, Vector3d radialIn)
-        {
-            this.prograde = prograde;
-            this.normal = normal;
-            this.radialIn = radialIn;
-        }
+    public Movement(Vector3d Prograde, Vector3d Normal, Vector3d RadialIn)
+    {
+        this.Prograde = Prograde;
+        this.Normal = Normal;
+        this.RadialIn = RadialIn;
     }
 }

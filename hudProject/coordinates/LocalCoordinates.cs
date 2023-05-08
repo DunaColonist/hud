@@ -1,121 +1,124 @@
-﻿using hud.input;
+﻿using Hud.Input;
 using KSP.Sim;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace hud.coordinates
+namespace Hud.Coordinates;
+
+internal class LocalCoordinates
 {
-    internal class LocalCoordinates
+    public Vector3d CenterOfMass { get; }
+
+    public Horizon Horizon { get; }
+    public Attitude Attitude { get; }
+    public Movement Movement { get; }
+    public Direction Direction { get; }
+
+    public Vector3d Heading { get; }
+    public Vector3d HorizontalHeading { get; }
+
+    public int HorizontalAngle { get; }
+    public int VerticalAngle { get; }
+
+    public LocalCoordinates(VesselComponent Vessel)
     {
-        public readonly Vector3d centerOfMass;
+        var frame = Vessel.transform.coordinateSystem;
+        CenterOfMass = frame.ToLocalPosition(Vessel.CenterOfMass);
 
-        public readonly Horizon horizon;
-        public readonly Attitude attitude;
-        public readonly Movement movement;
-        public readonly Direction direction;
+        var telemetry = Vessel._telemetryComponent;
 
-        public readonly Vector3d heading;
-        public readonly Vector3d horizontalHeading;
+        // TODO use vessel.SimulationObject.TargetingMode
+        // to find what should be available
+        // TODO need to wait for non sandbox mode to be released
+        /*
+            None,
+            Direction,
+            DirectionAndVelocity,
+            DirectionVelocityAndOrientation
+        */
 
-        public readonly int horizontalAngle;
-        public readonly int verticalAngle;
+        Horizon = new Horizon(
+            North: frame.ToLocalVector(telemetry.HorizonNorth).normalized,
+            East: frame.ToLocalVector(telemetry.HorizonEast).normalized,
+            Sky: frame.ToLocalVector(telemetry.HorizonUp).normalized);
 
-        public LocalCoordinates(VesselComponent vessel)
+        Attitude = new Attitude(
+            Forward: frame.ToLocalVector(Vessel.MOI.coordinateSystem.forward).normalized,
+            Up: frame.ToLocalVector(Vessel.MOI.coordinateSystem.up).normalized);
+
+        var speedMode = Vessel.speedMode;
+        switch (speedMode)
         {
+            case SpeedDisplayMode.Target:
+                {
+                    Movement = new Movement(Prograde: frame.ToLocalVector(telemetry.TargetPrograde).normalized);
+                    break;
+                }
 
-            var frame = vessel.transform.coordinateSystem;
-            centerOfMass = frame.ToLocalPosition(vessel.CenterOfMass);
+            case SpeedDisplayMode.Orbit:
+                {
+                    Movement = new Movement(
+                        Prograde: frame.ToLocalVector(telemetry.OrbitMovementPrograde).normalized,
+                        Normal: frame.ToLocalVector(telemetry.OrbitMovementNormal).normalized,
+                        RadialIn: frame.ToLocalVector(telemetry.OrbitMovementRadialIn).normalized);
+                    break;
+                }
 
-            var telemetry = vessel._telemetryComponent;
-            // TODO use vessel.SimulationObject.TargetingMode
-            // to find what should be available
-            // TODO need to wait for non sandbox mode to be released
-            /*
-                None,
-                Direction,
-                DirectionAndVelocity,
-                DirectionVelocityAndOrientation
-            */
-
-            horizon = new Horizon(
-                north: frame.ToLocalVector(telemetry.HorizonNorth).normalized,
-                east: frame.ToLocalVector(telemetry.HorizonEast).normalized,
-                sky: frame.ToLocalVector(telemetry.HorizonUp).normalized);
-
-            attitude = new Attitude(
-                forward : frame.ToLocalVector(vessel.MOI.coordinateSystem.forward).normalized,
-                up : frame.ToLocalVector(vessel.MOI.coordinateSystem.up).normalized);
-
-            var speedMode = vessel.speedMode;
-            switch(speedMode)
-            {
-                case SpeedDisplayMode.Target:
-                    {
-                        movement = new Movement(prograde: frame.ToLocalVector(telemetry.TargetPrograde).normalized);
-                        break;
-                    }
-                case SpeedDisplayMode.Orbit:
-                    {
-                        movement = new Movement(
-                            prograde: frame.ToLocalVector(telemetry.OrbitMovementPrograde).normalized,
-                            normal: frame.ToLocalVector(telemetry.OrbitMovementNormal).normalized,
-                            radialIn: frame.ToLocalVector(telemetry.OrbitMovementRadialIn).normalized);
-                        break;
-                    }
-                case SpeedDisplayMode.Surface:
-                default:
-                    {
-                        movement = new Movement(prograde: frame.ToLocalVector(telemetry.SurfaceMovementPrograde).normalized);
-                        break;
-                    }
-            };
-
-            // TODO fix/improve that in order to make sense
-            if (telemetry.SurfaceHorizontalSpeed > 1)
-            {
-                heading = movement.prograde;
-                horizontalHeading = Vector3d.Exclude(horizon.sky, heading).normalized;
-            } else
-            {
-                heading = attitude.forward;
-                horizontalHeading = Vector3d.Exclude(horizon.sky, heading).normalized;
-            }
-
-            Vector3d? target = null;
-            if (telemetry.HasTargetObject)
-            {
-                target = frame.ToLocalVector(telemetry.TargetDirection).normalized;
-            }
-
-            Vector3d? maneuver = null;
-            if (telemetry.HasManeuver)
-            {
-                maneuver = frame.ToLocalVector(telemetry.ManeuverDirection).normalized;
-            }
-            direction = new Direction(target: target, maneuver: maneuver);
-
-            horizontalAngle = (int) Vector3d.SignedAngle(horizontalHeading, horizon.north, -horizon.sky);
-            verticalAngle = (int) Vector3d.SignedAngle(heading, horizontalHeading, -Vector3d.Cross(horizontalHeading, horizon.sky));
+            case SpeedDisplayMode.Surface:
+            default:
+                {
+                    Movement = new Movement(Prograde: frame.ToLocalVector(telemetry.SurfaceMovementPrograde).normalized);
+                    break;
+                }
         }
 
-        public Vector3 ControlVector(AttitudeControlOverride controlOverride)
+        // TODO fix/improve that in order to make sense
+        if (telemetry.SurfaceHorizontalSpeed > 1)
         {
-            var horizontalAngle = convert(controlOverride.HorizontalAngle);
-            var horizontal =
-                Math.Cos(horizontalAngle) * horizon.north +
-                Math.Sin(-horizontalAngle) * horizon.east;
-
-            var verticalAngle = convert(controlOverride.VerticalAngle);
-            var vertical =
-                Math.Cos(verticalAngle) * horizontal +
-                Math.Sin(-verticalAngle) * horizon.sky;
-
-            return vertical.normalized;
+            Heading = Movement.Prograde;
+            HorizontalHeading = Vector3d.Exclude(Horizon.Sky, Heading).normalized;
+        }
+        else
+        {
+            Heading = Attitude.Forward;
+            HorizontalHeading = Vector3d.Exclude(Horizon.Sky, Heading).normalized;
         }
 
-        private double convert(double angle)
+        Vector3d? target = null;
+        if (telemetry.HasTargetObject)
         {
-            return -angle * (2 * Math.PI) / 360;
+            target = frame.ToLocalVector(telemetry.TargetDirection).normalized;
         }
+
+        Vector3d? maneuver = null;
+        if (telemetry.HasManeuver)
+        {
+            maneuver = frame.ToLocalVector(telemetry.ManeuverDirection).normalized;
+        }
+
+        Direction = new Direction(Target: target, Maneuver: maneuver);
+
+        HorizontalAngle = (int)Vector3d.SignedAngle(HorizontalHeading, Horizon.North, -Horizon.Sky);
+        VerticalAngle = (int)Vector3d.SignedAngle(Heading, HorizontalHeading, -Vector3d.Cross(HorizontalHeading, Horizon.Sky));
+    }
+
+    public Vector3 ControlVector(AttitudeControlOverride controlOverride)
+    {
+        var horizontalAngle = Convert(controlOverride.HorizontalAngle);
+        var horizontal =
+            (Math.Cos(horizontalAngle) * Horizon.North) +
+            (Math.Sin(-horizontalAngle) * Horizon.East);
+
+        var verticalAngle = Convert(controlOverride.VerticalAngle);
+        var vertical =
+            (Math.Cos(verticalAngle) * horizontal) +
+            (Math.Sin(-verticalAngle) * Horizon.Sky);
+
+        return vertical.normalized;
+    }
+
+    private double Convert(double angle)
+    {
+        return -angle * (2 * Math.PI) / 360;
     }
 }
