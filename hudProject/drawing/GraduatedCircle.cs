@@ -7,7 +7,7 @@ namespace Hud.Drawing;
 // but Disc is limited too because it is 2D form : so it has no 3D thickness...
 internal class GraduatedCircle
 {
-    internal class Thickness
+    internal static class Thickness
     {
         public static readonly long Circle = 5;
 
@@ -16,7 +16,7 @@ internal class GraduatedCircle
         public static readonly long SmallTick = 1;
     }
 
-    internal class Length
+    internal static class Length
     {
         public static readonly float BigTick = 0.1f;
         public static readonly float MediumTick = 0.05f;

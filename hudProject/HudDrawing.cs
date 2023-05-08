@@ -49,7 +49,7 @@ internal class HudDrawing
             var coord = new LocalCoordinates(vessel);
 
             DrawTracking(coord, radius, vessel, controlOverride, colors);
-            DrawSphere(coord, radius, vessel, colors);
+            DrawSphere(coord, radius, colors);
         }
     }
 
@@ -81,10 +81,8 @@ internal class HudDrawing
         drawing.DrawSelection(coord.Direction.Maneuver, colors.Maneuver);
     }
 
-    private void DrawSphere(LocalCoordinates coor, float radius, VesselComponent vessel, NavballColors colors)
+    private void DrawSphere(LocalCoordinates coord, float radius, NavballColors colors)
     {
-        var coord = new LocalCoordinates(vessel);
-
         new GraduatedCircle(
             coord.CenterOfMass,
             coord.Horizon.Sky,

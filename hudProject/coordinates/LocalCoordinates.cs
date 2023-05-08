@@ -27,16 +27,6 @@ internal class LocalCoordinates
 
         var telemetry = Vessel._telemetryComponent;
 
-        // TODO use vessel.SimulationObject.TargetingMode
-        // to find what should be available
-        // TODO need to wait for non sandbox mode to be released
-        /*
-            None,
-            Direction,
-            DirectionAndVelocity,
-            DirectionVelocityAndOrientation
-        */
-
         Horizon = new Horizon(
             North: frame.ToLocalVector(telemetry.HorizonNorth).normalized,
             East: frame.ToLocalVector(telemetry.HorizonEast).normalized,

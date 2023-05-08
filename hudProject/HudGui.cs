@@ -11,14 +11,14 @@ namespace Hud;
 
 internal class HudGui
 {
-    private string _text;
-    private string _buttonId;
+    private readonly string _text;
+    private readonly string _buttonId;
 
     private bool _isWindowOpen;
     private Rect _windowRect;
 
-    private HudConfig _config;
-    private AttitudeControlOverride _controlOverride;
+    private readonly HudConfig _config;
+    private readonly AttitudeControlOverride _controlOverride;
 
     // XXX should we only use ModInfo and not MyPluginInfo ?
     public HudGui(ModInfo modInfo, HudConfig config, AttitudeControlOverride controlOverride)
@@ -78,7 +78,6 @@ internal class HudGui
 
     private void RegisterFlightAppBarButton(ModInfo modInfo, string text, string id)
     {
-        _buttonId = id;
         Appbar.RegisterAppButton(text, id, GetIcon(modInfo), isOpen =>
         {
             _isWindowOpen = isOpen;

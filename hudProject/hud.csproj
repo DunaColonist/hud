@@ -37,6 +37,12 @@
             PrivateAssets="all"
             Condition="$(MSBuildProjectExtension) == '.csproj'"
         />
+        <PackageReference
+            Include="SonarAnalyzer.CSharp"
+            Version="9.0.0.68202"
+            PrivateAssets="all"
+            Condition="$(MSBuildProjectExtension) == '.csproj'"
+        />
         
         <PackageReference Include="BepInEx.Analyzers"                  Version="1.*"       PrivateAssets="all" />
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0"     PrivateAssets="all" />
