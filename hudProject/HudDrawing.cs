@@ -1,6 +1,6 @@
 ﻿using Hud.Coordinates;
-using Hud.Drawing;
 using Hud.Input;
+using Hud.Shapes;
 using KSP.Sim.impl;
 using Shapes;
 using UnityEngine;
@@ -55,52 +55,48 @@ internal class HudDrawing
 
     private void DrawTracking(LocalCoordinates coord, float radius, VesselComponent vessel, AttitudeControlOverride controlOverride, NavballColors colors)
     {
-        var drawing = new TrackingDrawing(coord.CenterOfMass, radius);
+        var trackingShapes = new TrackingShapes(coord.CenterOfMass, radius);
         var situation = vessel.Situation;
 
         // TODO find  better way to not display a random prograde
         if (situation != VesselSituations.PreLaunch && situation != VesselSituations.Landed && situation != VesselSituations.Splashed)
         {
-            drawing.DrawHeading(coord.Movement.Prograde, colors.Prograde);
+            trackingShapes.DrawHeading(coord.Movement.Prograde, colors.Prograde);
         }
 
-        drawing.DrawReference(coord.Movement.Normal, colors.Normal);
-        drawing.DrawReference(coord.Movement.RadialIn, colors.Radial);
+        trackingShapes.DrawReference(coord.Movement.Normal, colors.Normal);
+        trackingShapes.DrawReference(coord.Movement.RadialIn, colors.Radial);
 
         if (controlOverride.IsEnabled)
         {
             Vector3 controlVector = coord.ControlVector(controlOverride);
-            drawing.DrawHeading(controlVector, Color.blue, true);
+            trackingShapes.DrawHeading(controlVector, Color.blue, true);
         }
         else
         {
-            drawing.DrawHeading(coord.Attitude.Up, colors.Up, true);
+            trackingShapes.DrawHeading(coord.Attitude.Up, colors.Up, true);
         }
 
-        drawing.DrawSelection(coord.Direction.Target, colors.Target);
-        drawing.DrawSelection(coord.Direction.Maneuver, colors.Maneuver);
+        trackingShapes.DrawSelection(coord.Direction.Target, colors.Target);
+        trackingShapes.DrawSelection(coord.Direction.Maneuver, colors.Maneuver);
     }
 
     private void DrawSphere(LocalCoordinates coord, float radius, NavballColors colors)
     {
-        new GraduatedCircle(
-            coord.CenterOfMass,
+        var shapes = new SphereShapes(coord.CenterOfMass, radius);
+
+        shapes.DrawGraduatedTorus(
             coord.Horizon.Sky,
             coord.HorizontalHeading,
-            radius,
             new Color[] { colors.Sky, colors.Sky, colors.Ground, colors.Ground },
             new Color[] { colors.Ground, colors.Sky, colors.Ground, colors.Ground },
-            true
-        );
+            true);
 
-        new GraduatedCircle(
-            coord.CenterOfMass,
+        shapes.DrawGraduatedTorus(
             coord.Horizon.North,
             coord.Horizon.East,
-            radius,
             new Color[] { colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge },
             new Color[] { colors.East, colors.North, colors.West, colors.South },
-            false
-        );
+            false);
     }
 }

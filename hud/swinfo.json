@@ -1,9 +1,9 @@
 {
   "mod_id": "hud",
-  "author": "dunacolonist",
+  "author": "DunaColonist",
   "name": "HUD : Head Up Display",
-  "description": "",
-  "source": "https://github.com/huder/hud",
+  "description": "A virtual navball : now you can define and check the direction while still keeping watch on your vessel!",
+  "source": "https://github.com/DunaColonist/hud",
   "version": "0.5.0",
   "dependencies": [
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Hud.Drawing;
+namespace Hud.Shapes;
 
 internal class NavballColors
 {
