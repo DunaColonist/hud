@@ -10,6 +10,8 @@ namespace Hud;
 
 internal class HudDrawing
 {
+    private static float _previousRadius = 0;
+
     public static void OnPostRender(Camera cam)
     {
         DrawCommand.OnPostRenderBuiltInRP(cam);
@@ -39,12 +41,13 @@ internal class HudDrawing
                 return;
             }
 
-            var radius = simulationObjectView.Vessel.BoundingSphere.radius * 200 / 100;
+            var observedRadius = simulationObjectView.Vessel.BoundingSphere.radius * 200 / 100;
+            var change = Mathf.Abs(_previousRadius - observedRadius) / (_previousRadius - observedRadius + 0.0001);
+            var radius = (0.95 <= change && change < 1.05) ? _previousRadius : observedRadius;
+            _previousRadius = radius;
+
 
             NavballColors colors = new();
-            Draw.TorusThicknessSpace = ThicknessSpace.Pixels;
-            Draw.TorusRadiusSpace = ThicknessSpace.Meters;
-            Draw.LineThicknessSpace = ThicknessSpace.Pixels;
 
             var coord = new LocalCoordinates(vessel);
 
