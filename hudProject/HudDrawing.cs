@@ -41,9 +41,13 @@ internal class HudDrawing
                 return;
             }
 
+            // 200% : worst case the center of mass is an extremity of the bouding sphere so it ensure that the hud is around the vessel
             var observedRadius = simulationObjectView.Vessel.BoundingSphere.radius * 200 / 100;
-            var change = Mathf.Abs(_previousRadius - observedRadius) / (_previousRadius - observedRadius + 0.0001);
-            var radius = (0.95 <= change && change < 1.05) ? _previousRadius : observedRadius;
+            if (_previousRadius == 0) {
+                _previousRadius = observedRadius;
+            }
+            var change = Mathf.Abs(_previousRadius - observedRadius) / _previousRadius;
+            var radius = (change <= 0.10) ? _previousRadius : observedRadius;
             _previousRadius = radius;
 
 
