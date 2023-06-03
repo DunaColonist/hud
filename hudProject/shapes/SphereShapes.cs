@@ -7,29 +7,47 @@ namespace Hud.Shapes;
 // but Disc is limited too because it is 2D form : so it has no 3D thickness...
 internal class SphereShapes
 {
-    internal static class Thickness
+    internal class Thickness
     {
-        public static readonly float Circle = 0.05f;
+        public readonly float Circle;
+        public readonly float BigTick;
+        public readonly float MediumTick;
+        public readonly float SmallTick;
 
-        public static readonly float BigTick = 0.05f;
-        public static readonly float MediumTick = 0.03f;
-        public static readonly float SmallTick = 0.01f;
+        public Thickness(float radius) 
+        {
+            Circle = radius / 100;
+            BigTick = radius / 100;
+            MediumTick = radius / 200;
+            SmallTick = radius / 300;
+        }
     }
 
-    internal static class Length
+    internal class Length
     {
-        public static readonly float BigTick = 0.1f;
-        public static readonly float MediumTick = 0.05f;
-        public static readonly float SmallTick = 0.02f;
+        public readonly float BigTick;
+        public readonly float MediumTick;
+        public readonly float SmallTick;
+
+        public Length(float radius) 
+        {
+            BigTick = radius / 40;
+            MediumTick = radius / 80;
+            SmallTick = radius / 160;
+        }
     }
 
     private readonly Vector3 _position;
     private readonly float _radius;
+    private readonly Thickness _thickness;
+    private readonly Length _length;
 
     public SphereShapes(Vector3 position, float radius)
     {
         _position = position;
         _radius = radius;
+        _thickness = new Thickness(_radius);
+        _length = new Length(_radius);
     }
 
     public void DrawGraduatedTorus(Vector3 up, Vector3 right, Color[] quarterColors, Color[] tickColors, bool invertTick)
@@ -59,25 +77,25 @@ internal class SphereShapes
 
             var start = _position + (horizontal * currentRadius) + (vertical * currentOffset);
             var end = _position + (horizontal * nextRadius) + (vertical * nextOffset);
-            SpatialShapes.DrawLine(start, end, color, Thickness.Circle);
+            SpatialShapes.DrawLine(start, end, color, _thickness.Circle);
 
             var radial = (start - _position).normalized;
 
             var tickDirection = invertTick ? -1 : 1;
             if (i == 0)
             {
-                var localOffset = radial * _radius * Length.BigTick * tickDirection;
-                SpatialShapes.DrawLine(start, start - localOffset, bigTickColor, Thickness.BigTick);
+                var localOffset = radial * _radius * _length.BigTick * tickDirection;
+                SpatialShapes.DrawLine(start, start - localOffset, bigTickColor, _thickness.BigTick);
             }
             else if (i == steps / 2)
             {
-                var localOffset = radial * _radius * Length.MediumTick * tickDirection;
-                SpatialShapes.DrawLine(start, start - localOffset, color, Thickness.MediumTick);
+                var localOffset = radial * _radius * _length.MediumTick * tickDirection;
+                SpatialShapes.DrawLine(start, start - localOffset, color, _thickness.MediumTick);
             }
             else if (i % 2 == 0)
             {
-                var localOffset = radial * _radius * Length.SmallTick * tickDirection;
-                SpatialShapes.DrawLine(start, start - localOffset, color, Thickness.SmallTick);
+                var localOffset = radial * _radius * _length.SmallTick * tickDirection;
+                SpatialShapes.DrawLine(start, start - localOffset, color, _thickness.SmallTick);
             }
         }
     }
