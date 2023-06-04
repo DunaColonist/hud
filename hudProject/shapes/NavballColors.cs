@@ -9,15 +9,19 @@ internal class NavballColors
     public Color Sky { get; } = Color100(21, 64, 78);
     public Color Ground { get; } = Color100(67, 42, 19);
 
+    public Color SkyIndicator { get; } = Color100(5, 16, 20);
+    public Color HorizontalIndicator { get; } = Color100(8, 20, 54);
+    public Color GroundIndicator { get; } = Color100(17, 10, 5);
+
     public Color North { get; } = Color100(80, 16, 0);
     public Color South { get; } = Color100(2, 36, 0);
     public Color East { get; } = Color100(8, 20, 54);
     public Color West { get; } = Color100(8, 20, 54);
 
     public Color HorizonEdge { get; } = Color.grey;
-    public Color HorizonFill { get; } = new Color(Color.grey.r, Color.grey.g, Color.grey.b, 0.05f);
 
     public Color Up { get; } = Color100(80, 66, 0);
+    public Color Control { get; } = Color100(100, 22, 0);
 
     public Color Prograde { get; } = Color100(0, 100, 40);
     public Color Normal { get; } = Color100(47, 14, 47);

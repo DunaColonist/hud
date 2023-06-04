@@ -77,7 +77,7 @@ internal class HudDrawing
         if (controlOverride.IsEnabled)
         {
             Vector3 controlVector = coord.ControlVector(controlOverride);
-            trackingShapes.DrawHeading(controlVector, Color.blue, true);
+            trackingShapes.DrawHeading(controlVector, colors.Control, true);
         }
         else
         {
@@ -92,18 +92,24 @@ internal class HudDrawing
     {
         var shapes = new SphereShapes(coord.CenterOfMass, radius);
 
-        shapes.DrawGraduatedTorus(
+        shapes.DrawWideTorus(
             coord.Horizon.Sky,
             coord.HorizontalHeading,
-            new Color[] { colors.Sky, colors.Sky, colors.Ground, colors.Ground },
-            new Color[] { colors.Ground, colors.Sky, colors.Ground, colors.Ground },
-            true);
+            new Color[] { colors.Sky, colors.Sky, colors.Ground, colors.Ground });
+        
+        shapes.DrawGraduation(coord.Horizon.Sky, colors.SkyIndicator, false);
+        shapes.DrawGraduation(coord.HorizontalHeading, colors.HorizontalIndicator, false);
+        shapes.DrawGraduation(-coord.Horizon.Sky, colors.GroundIndicator, false);
+        shapes.DrawGraduation(-coord.HorizontalHeading, colors.HorizontalIndicator, false);
 
-        shapes.DrawGraduatedTorus(
+        shapes.DrawWideTorus(
             coord.Horizon.North,
             coord.Horizon.East,
-            new Color[] { colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge },
-            new Color[] { colors.East, colors.North, colors.West, colors.South },
-            false);
+            new Color[] { colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge, colors.HorizonEdge });
+
+        shapes.DrawGraduation(coord.Horizon.North, colors.North, true);
+        shapes.DrawGraduation(coord.Horizon.East, colors.East, true);
+        shapes.DrawGraduation(-coord.Horizon.North, colors.South, true);
+        shapes.DrawGraduation(-coord.Horizon.East, colors.West, true);
     }
 }
