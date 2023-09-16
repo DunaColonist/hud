@@ -1,11 +1,23 @@
-hudProject/bin/*
-hudProject/obj/*
+.idea
+.idea/*
 
+.vs
+.vs/*
+
+Backup
 Backup/*
-Debug/*
-Release/*
 
+Debug
+Debug/*
+
+external_dlls
 external_dlls/*
 
-.vs/*
-.idea/*
+hudProject/bin
+hudProject/bin/*
+
+hudProject/obj
+hudProject/obj/*
+
+Release
+Release/*
