@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
+
         <AssemblyName>duna.colonist.hud</AssemblyName>
         <Product>HUD : Head Up Display</Product>
         <Description></Description>
-        <Version>0.7.0</Version>
+        <Version>0.8.0-WIP</Version>
+
 		<RestoreAdditionalProjectSources>
 			https://api.nuget.org/v3/index.json;
 			https://nuget.spacewarp.org/v3/index.json
 		</RestoreAdditionalProjectSources>
+
         <RootNamespace>Hud</RootNamespace>
         <ModId Condition="'$(ModId)'==''">hud</ModId>
     </PropertyGroup>
@@ -33,13 +36,13 @@
     <ItemGroup>
         <PackageReference
             Include="StyleCop.Analyzers"
-            Version="1.2.0-beta.435"
+            Version="1.1.118"
             PrivateAssets="all"
             Condition="$(MSBuildProjectExtension) == '.csproj'"
         />
         <PackageReference
             Include="SonarAnalyzer.CSharp"
-            Version="9.0.0.68202"
+            Version="9.22.0.87781"
             PrivateAssets="all"
             Condition="$(MSBuildProjectExtension) == '.csproj'"
         />
@@ -49,7 +52,8 @@
         <PackageReference Include="BepInEx.Core"                       Version="5.*"            />
         <PackageReference Include="BepInEx.PluginInfoProps"            Version="2.*"            />
         <PackageReference Include="HarmonyX"                           Version="2.10.1"         />
-        <PackageReference Include="SpaceWarp"                          Version="1.4.0"          />
+        <PackageReference Include="SpaceWarp"                          Version="1.9.4"          />
+        <PackageReference Include="UitkForKsp2"                        Version="2.4.*"/>
         <PackageReference Include="UnityEngine.Modules"                Version="2020.3.33.1"    IncludeAssets="compile" />
     </ItemGroup>
 
