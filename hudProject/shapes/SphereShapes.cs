@@ -31,9 +31,9 @@ internal class SphereShapes
     public void DrawGraduation(Vector3 direction, Color color, bool invert)
     {
         var inversion = invert ? -1 : 1;
-        
+
         var start = _position + (direction * _radius);
-        var end = start + 2 * _thickness * direction * inversion;
+        var end = start + (2 * _thickness * direction * inversion);
 
         SpatialShapes.DrawLine(start, end, color, _thickness * 3f);
     }

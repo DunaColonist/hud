@@ -14,11 +14,11 @@ internal class HudGui
     private readonly string _text;
     private readonly string _buttonId;
 
-    private bool _isWindowOpen;
-    private Rect _windowRect;
-
     private readonly HudConfig _config;
     private readonly AttitudeControlOverride _controlOverride;
+
+    private bool _isWindowOpen;
+    private Rect _windowRect;
 
     // XXX should we only use ModInfo and not MyPluginInfo ?
     public HudGui(ModInfo modInfo, HudConfig config, AttitudeControlOverride controlOverride)

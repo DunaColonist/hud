@@ -8,19 +8,18 @@ internal class TrackingShapes
     internal class Thickness
     {
         public readonly float Torus;
-        
+
         public readonly float MajorLine;
-        
+
         public readonly float MinorLine;
 
-        public Thickness(float radius) 
+        public Thickness(float radius)
         {
             Torus = radius / 100;
             MajorLine = radius / 100;
             MinorLine = radius / 200;
         }
     }
-
 
     private readonly Vector3 _position;
     private readonly float _radius;
@@ -43,8 +42,8 @@ internal class TrackingShapes
         DrawHeadingLine(direction, color, true, invert);
         DrawHeadingCone(direction, color, true, invert);
 
-        DrawHeadingLine(- direction, color, false, invert);
-        DrawHeadingCone(- direction, color, false, invert);
+        DrawHeadingLine(-direction, color, false, invert);
+        DrawHeadingCone(-direction, color, false, invert);
     }
 
     public void DrawReference(Vector3? direction, Color color)
@@ -80,13 +79,14 @@ internal class TrackingShapes
 
         var thickness = major ? _thickness.MajorLine : _thickness.MinorLine;
 
-        //  ensure that dahsSize + dashSpace is the same for major and minor heading
+        // ensure that dahsSize + dashSpace is the same for major and minor heading
         var dashSize = major ? _radius / 20 : _radius / 50;
-        var dashSpace = _radius / 7 - dashSize;
+        var dashSpace = (_radius / 7) - dashSize;
         var dashOffset = invert ? 0 : 0.5f;
-        var dashStyle = new DashStyle(dashSize, dashSpace, dashOffset);
-
-        dashStyle.space = DashSpace.Meters;
+        var dashStyle = new DashStyle(dashSize, dashSpace, dashOffset)
+        {
+            space = DashSpace.Meters
+        };
 
         SpatialShapes.DrawLine(start, end, color, thickness, dashStyle);
     }
@@ -109,5 +109,4 @@ internal class TrackingShapes
     {
         return direction.Value.normalized * _radius * offset;
     }
-
 }

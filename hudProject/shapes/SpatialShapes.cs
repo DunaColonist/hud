@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Hud.Shapes;
 
-internal class SpatialShapes
+internal static class SpatialShapes
 {
     public static void DrawLine(Vector3 start, Vector3 end, Color color, float thickness, DashStyle dashStyle = null)
     {
@@ -25,22 +25,22 @@ internal class SpatialShapes
         Draw.Cone(blendMode, sizeSpace, pos, rot, radius, length, fillCap, color);
     }
 
-    public static void DrawTorus(Vector3d pos, Vector3d normal, float radius, float thickness, Color color) 
+    public static void DrawTorus(Vector3d pos, Vector3d normal, float radius, float thickness, Color color)
     {
         var blendMode = ShapesBlendMode.Opaque;
         var spaceRadius = ThicknessSpace.Meters;
         var spaceThickness = ThicknessSpace.Meters;
         var rot = Quaternion.LookRotation(normal);
-        
+
         Draw.Torus(blendMode, spaceRadius, spaceThickness, pos, rot, radius, thickness, color);
     }
 
-    // XX can not draw a partial Torus only a partial Disc
+    // XXX can not draw a partial Torus only a partial Disc
     // but Disc is limited too because it is 2D form : so it has no 3D thickness and spatial ordering...
     // here is a workaround
     public static void DrawTorusQuarter(Vector3d pos, Vector3 vertical, Vector3 horizontal, Color color, float radius, float thickness, int steps = 18)
     {
-        // TODO memoize cos and sin
+        // XXX memoize cos and sin
         for (int i = 0; i < steps; i++)
         {
             var stepRad = Mathf.PI / (steps * 2);
@@ -61,12 +61,12 @@ internal class SpatialShapes
     }
 
     // Torus has a circular section, here is a workaround to increase width without height increase
-    public static void DrawWideTorusQuarter(Vector3d pos, Vector3 vertical, Vector3 horizontal, Color color, float radius, float thickness, int wide) {
+    public static void DrawWideTorusQuarter(Vector3d pos, Vector3 vertical, Vector3 horizontal, Color color, float radius, float thickness, int wide)
+    {
         for (int i = 0 - wide; i <= wide; i++)
         {
-            var localRadius = radius - i * thickness;
+            var localRadius = radius - (i * thickness);
             SpatialShapes.DrawTorusQuarter(pos, vertical, horizontal, color, localRadius, thickness);
         }
     }
-
 }

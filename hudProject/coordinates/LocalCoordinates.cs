@@ -62,7 +62,7 @@ internal class LocalCoordinates
                 }
         }
 
-        // TODO fix/improve that in order to make sense
+        // XXX fix/improve that in order to make sense
         if (telemetry.SurfaceHorizontalSpeed > 1)
         {
             Heading = Movement.Prograde;

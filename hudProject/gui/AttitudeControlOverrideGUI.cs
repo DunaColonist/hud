@@ -22,7 +22,7 @@ internal class AttitudeControlOverrideGUI
 
         var vessel = KSP.Game.GameManager.Instance.Game.ViewController.GetActiveSimVessel();
 
-        // TODO deplace somewhere not in GUI ;)
+        // XXX deplace somewhere not in GUI ;)
         if (controlOverride.IsEnabled)
         {
             if (vessel.Autopilot.AutopilotMode != AutopilotMode.Autopilot)

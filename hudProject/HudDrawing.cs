@@ -43,15 +43,18 @@ internal class HudDrawing
 
             // 200% : worst case the center of mass is an extremity of the bouding sphere so it ensure that the hud is around the vessel
             var observedRadius = simulationObjectView.Vessel.BoundingSphere.radius * 200 / 100;
-            if (_previousRadius == 0) {
+
+            // avoid radius changing to much to due to change of the BoundingSphere when the craft does not change
+            if (observedRadius * 0.9 < _previousRadius && _previousRadius < observedRadius * 1.1)
+            {
                 _previousRadius = observedRadius;
             }
+
             var change = Mathf.Abs(_previousRadius - observedRadius) / _previousRadius;
             var radius = (change <= 0.10) ? _previousRadius : observedRadius;
             _previousRadius = radius;
 
-
-            NavballColors colors = new();
+            NavballColors colors = new ();
 
             var coord = new LocalCoordinates(vessel);
 
@@ -65,7 +68,7 @@ internal class HudDrawing
         var trackingShapes = new TrackingShapes(coord.CenterOfMass, radius);
         var situation = vessel.Situation;
 
-        // TODO find  better way to not display a random prograde
+        // XXX find  better way to not display a random prograde
         if (situation != VesselSituations.PreLaunch && situation != VesselSituations.Landed && situation != VesselSituations.Splashed)
         {
             trackingShapes.DrawHeading(coord.Movement.Prograde, colors.Prograde);
@@ -96,7 +99,7 @@ internal class HudDrawing
             coord.Horizon.Sky,
             coord.HorizontalHeading,
             new Color[] { colors.Sky, colors.Sky, colors.Ground, colors.Ground });
-        
+
         shapes.DrawGraduation(coord.Horizon.Sky, colors.SkyIndicator, false);
         shapes.DrawGraduation(coord.HorizontalHeading, colors.HorizontalIndicator, false);
         shapes.DrawGraduation(-coord.Horizon.Sky, colors.GroundIndicator, false);
