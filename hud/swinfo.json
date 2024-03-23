@@ -4,7 +4,7 @@
   "name": "HUD : Head Up Display",
   "description": "A virtual navball : now you can define and check the direction while still keeping watch on your vessel!",
   "source": "https://github.com/DunaColonist/hud",
-  "version": "0.8.0-WIP",
+  "version": "0.8.0",
   "dependencies": [
     {
       "id":  "SpaceWarp",

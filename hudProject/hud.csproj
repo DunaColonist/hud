@@ -9,7 +9,7 @@
         <AssemblyName>duna.colonist.hud</AssemblyName>
         <Product>HUD : Head Up Display</Product>
         <Description></Description>
-        <Version>0.8.0-WIP</Version>
+        <Version>0.8.0</Version>
 
 		<RestoreAdditionalProjectSources>
 			https://api.nuget.org/v3/index.json;
