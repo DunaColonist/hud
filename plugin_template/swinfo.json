@@ -1,0 +1,30 @@
+{
+  "spec": "2.0",
+  "mod_id": "hud",
+  "author": "DunaColonist",
+  "name": "HUD : Head Up Display",
+  "description": "A virtual navball : now you can define and check the direction while still keeping watch on your vessel!",
+  "source": "https://github.com/DunaColonist/hud",
+  "version": "0.0.9-wip",
+  "version_check": "",
+  "ksp2_version": {
+    "min": "0.2.1",
+    "max": "*"
+  },
+  "dependencies": [
+    {
+      "id": "com.github.x606.spacewarp",
+      "version": {
+        "min": "1.9.0",
+        "max": "*"
+      }
+    },
+    {
+      "id": "UitkForKsp2",
+      "version": {
+        "min": "2.4.2",
+        "max": "*"
+      }
+    }
+  ]
+}
