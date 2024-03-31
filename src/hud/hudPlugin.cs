@@ -6,9 +6,13 @@ using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
 using SpaceWarp.API.UI.Appbar;
 using hud.UI;
+using hud.Input;
 using UitkForKsp2.API;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+using KSP.Game;
+using KSP.Messages;
 
 namespace hud;
 
@@ -16,29 +20,35 @@ namespace hud;
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
 public class hudPlugin : BaseSpaceWarpPlugin
 {
-    // Useful in case some other mod wants to use this mod a dependency
     [PublicAPI] public const string ModGuid = MyPluginInfo.PLUGIN_GUID;
     [PublicAPI] public const string ModName = MyPluginInfo.PLUGIN_NAME;
     [PublicAPI] public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
 
-    /// Singleton instance of the plugin class
     [PublicAPI] public static hudPlugin Instance { get; set; }
 
-    // AppBar button IDs
     internal const string ToolbarFlightButtonID = "BTN-hudFlight";
-    internal const string ToolbarOabButtonID = "BTN-hudOAB";
     internal const string ToolbarKscButtonID = "BTN-hudKSC";
 
-    /// <summary>
-    /// Runs when the mod is first initialized.
-    /// </summary>
+    private HudConfig _config;
+    private AttitudeControlOverride _controlOverride;
+    private HudGui _gui;
+    private HudDrawing _drawing;
+
+    private bool hudIsRequired;
+
     public override void OnInitialized()
     {
+        Logger.LogInfo("OnInitialized : start");
         base.OnInitialized();
+
+        _config = new HudConfig(Config);
+        _controlOverride = new AttitudeControlOverride();
+        _gui = new HudGui(SpaceWarpMetadata, _config, _controlOverride);
+        _drawing = new HudDrawing();
 
         Instance = this;
 
-        // Load all the other assemblies used by this mod
+        RegisterDetectionOfHudNeed();
         LoadAssemblies();
 
         // Load the UI from the asset bundle
@@ -86,14 +96,6 @@ public class hudPlugin : BaseSpaceWarpPlugin
             isOpen => myFirstWindowController.IsWindowOpen = isOpen
         );
 
-        // Register OAB AppBar Button
-        Appbar.RegisterOABAppButton(
-            ModName,
-            ToolbarOabButtonID,
-            AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
-            isOpen => myFirstWindowController.IsWindowOpen = isOpen
-        );
-
         // Register KSC AppBar Button
         Appbar.RegisterKSCAppButton(
             ModName,
@@ -101,17 +103,73 @@ public class hudPlugin : BaseSpaceWarpPlugin
             AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
             () => myFirstWindowController.IsWindowOpen = !myFirstWindowController.IsWindowOpen
         );
+
+        Logger.LogInfo("OnInitialized : end");
     }
 
-    /// <summary>
-    /// Loads all the assemblies for the mod.
-    /// </summary>
     private static void LoadAssemblies()
     {
-        // Load the Unity project assembly
         var currentFolder = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory!.FullName;
         var unityAssembly = Assembly.LoadFrom(Path.Combine(currentFolder, "hud.Unity.dll"));
-        // Register any custom UI controls from the loaded assembly
         CustomControls.RegisterFromAssembly(unityAssembly);
+    }
+
+    private void OnCameraPreRender(Camera cam)
+    {
+        if (cam is null)
+        {
+            return;
+        }
+
+        if (cam.name != "FlightCameraPhysics_Main")
+        {
+            return;
+        }
+
+        if (!hudIsRequired)
+        {
+            return;
+        }
+
+        try
+        {
+            _drawing.DrawHud(_config, _controlOverride, cam);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError($"Error during drawing of hud : {e.GetType()} {e.Message}");
+        }
+    }
+
+    private void OnCameraPostRender(Camera cam)
+    {
+        if (!hudIsRequired)
+        {
+            return;
+        }
+
+        HudDrawing.OnPostRender(cam);
+    }
+
+    private void RegisterAllHarmonyPatchesInProject()
+    {
+        // Harmony.CreateAndPatchAll(typeof(HudPlugin).Assembly);
+    }
+
+    private void RegisterDetectionOfHudNeed()
+    {
+        Game.Messages.Subscribe<GameStateChangedMessage>(msg =>
+        {
+            var message = (GameStateChangedMessage)msg;
+
+            if (message.CurrentState == GameState.FlightView)
+            {
+                hudIsRequired = true;
+            }
+            else if (message.PreviousState == GameState.FlightView)
+            {
+                hudIsRequired = false;
+            }
+        });
     }
 }
