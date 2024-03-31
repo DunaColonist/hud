@@ -126,6 +126,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
     public virtual void OnEnable()
     {
+        Logger.LogInfo("OnEnable : start");
         Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Combine(
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
@@ -134,10 +135,12 @@ public class hudPlugin : BaseSpaceWarpPlugin
             Camera.onPostRender,
             new Camera.CameraCallback(OnCameraPostRender)
         );
+        Logger.LogInfo("OnEnable : end");
     }
 
     public virtual void OnDisable()
     {
+        Logger.LogInfo("OnDisable : start");
         Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Remove(
             Camera.onPreRender,
             new Camera.CameraCallback(OnCameraPreRender)
@@ -146,6 +149,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
             Camera.onPostRender,
             new Camera.CameraCallback(OnCameraPostRender)
         );
+        Logger.LogInfo("OnDisable : end");
     }
 
     private void OnCameraPreRender(Camera cam)
@@ -195,15 +199,9 @@ public class hudPlugin : BaseSpaceWarpPlugin
         Game.Messages.Subscribe<GameStateChangedMessage>(msg =>
         {
             var message = (GameStateChangedMessage)msg;
-
-            if (message.CurrentState == GameState.FlightView)
-            {
-                hudIsRequired = true;
-            }
-            else if (message.PreviousState == GameState.FlightView)
-            {
-                hudIsRequired = false;
-            }
+            hudIsRequired = message.CurrentState == GameState.FlightView;
+            
+            Logger.LogInfo($"hud is required : {hudIsRequired}");
         });
     }
 }
