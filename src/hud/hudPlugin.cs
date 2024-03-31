@@ -1,5 +1,6 @@
 using System.Reflection;
 using BepInEx;
+using HarmonyLib;
 using JetBrains.Annotations;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
@@ -48,6 +49,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
         Instance = this;
 
+        RegisterAllHarmonyPatchesInProject();
         RegisterDetectionOfHudNeed();
         LoadAssemblies();
 
@@ -114,6 +116,38 @@ public class hudPlugin : BaseSpaceWarpPlugin
         CustomControls.RegisterFromAssembly(unityAssembly);
     }
 
+    private void OnGUI()
+    {
+        if (_gui is not null)
+        {
+            _gui.OnGUI();
+        }
+    }
+
+    public virtual void OnEnable()
+    {
+        Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Combine(
+            Camera.onPreRender,
+            new Camera.CameraCallback(OnCameraPreRender)
+        );
+        Camera.onPostRender = (Camera.CameraCallback)System.Delegate.Combine(
+            Camera.onPostRender,
+            new Camera.CameraCallback(OnCameraPostRender)
+        );
+    }
+
+    public virtual void OnDisable()
+    {
+        Camera.onPreRender = (Camera.CameraCallback)System.Delegate.Remove(
+            Camera.onPreRender,
+            new Camera.CameraCallback(OnCameraPreRender)
+        );
+        Camera.onPostRender = (Camera.CameraCallback)System.Delegate.Remove(
+            Camera.onPostRender,
+            new Camera.CameraCallback(OnCameraPostRender)
+        );
+    }
+
     private void OnCameraPreRender(Camera cam)
     {
         if (cam is null)
@@ -153,7 +187,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
 
     private void RegisterAllHarmonyPatchesInProject()
     {
-        // Harmony.CreateAndPatchAll(typeof(HudPlugin).Assembly);
+        Harmony.CreateAndPatchAll(typeof(hudPlugin).Assembly);
     }
 
     private void RegisterDetectionOfHudNeed()

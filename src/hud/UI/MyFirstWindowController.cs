@@ -44,11 +44,6 @@ public class MyFirstWindowController : MonoBehaviour
             GameObject.Find(hudPlugin.ToolbarFlightButtonID)
                 ?.GetComponent<UIValue_WriteBool_Toggle>()
                 ?.SetValue(value);
-
-            // Update the OAB AppBar button state
-            GameObject.Find(hudPlugin.ToolbarOabButtonID)
-                ?.GetComponent<UIValue_WriteBool_Toggle>()
-                ?.SetValue(value);
         }
     }
 
