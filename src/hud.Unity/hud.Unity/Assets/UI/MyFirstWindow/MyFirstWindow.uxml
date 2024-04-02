@@ -1,17 +1,76 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MyFirstWindow/MyFirstWindow.uss?fileID=7433441132597879392&amp;guid=f49119c0dc6aec7469a0374f7f606ceb&amp;type=3#MyFirstWindow" />
-    <ui:VisualElement class="root">
+    <ui:VisualElement name="VisualElement" class="root">
         <ui:VisualElement name="title-bar">
             <ui:Label text="HUD : Head Up Display" />
             <ui:Button text="×" name="close-button" />
         </ui:VisualElement>
-        <ui:VisualElement name="content">
-            <ui:VisualElement name="icon" />
-            <ui:TextField picking-mode="Ignore" label="Player name:" name="name-textfield" />
-            <ui:Toggle label="Is it afternoon?" name="noon-toggle" class="toggle" />
-            <ui:Button text="Say hello!" name="say-hello-button" />
-            <ui:Label name="greeting-label" />
+        <ui:Label tabindex="-1" text="--------------------------------------------" class="separator" />
+        <ui:VisualElement name="content-display">
+            <ui:Toggle label="Enable display of hud" name="display-toggle" class="toggle" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content-attitude">
+            <ui:Toggle label="Enable attitude control" name="attitude-toggle" class="toggle" />
+            <ui:VisualElement name="title-horizontal" class="composed-title">
+                <ui:Label text="----------" />
+                <ui:Label class="hspacer" />
+                <ui:Label text="horizontal (" />
+                <ui:Label name="horizontal-value" />
+                <ui:Label text="°)" />
+                <ui:Label class="hspacer" />
+                <ui:Label text="----------" />
+            </ui:VisualElement>
+            <ui:VisualElement class="row">
+                <ui:Button text="North" />
+                <ui:Button text="East" />
+                <ui:Button text="South" />
+                <ui:Button text="West" />
+            </ui:VisualElement>
+            <ui:VisualElement name="horizontal-input" class="row">
+                <ui:Label text="target :" class="target" />
+                <ui:TextField picking-mode="Ignore" value="180" name="horizontal-free-input" class="free-input" />
+                <ui:Label text="°" class="target" />
+                <ui:Label class="hspacer" />
+                <ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Button text="+1" name="horizontal-add-one" />
+                        <ui:Button text="+5" name="horizontal-add-five" />
+                        <ui:Button text="+10" name="horizontal-add-ten" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Button text="-1" name="horizontal-minus-one" />
+                        <ui:Button text="-5" name="horizontal-minus-five" />
+                        <ui:Button text="-10" name="horizontal-minus-ten" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="title-vertical" class="composed-title">
+                <ui:Label text="----------" />
+                <ui:Label class="hspacer" />
+                <ui:Label text="vertical (" />
+                <ui:Label name="vertical-value" />
+                <ui:Label text="°)" />
+                <ui:Label class="hspacer" />
+                <ui:Label text="----------" />
+            </ui:VisualElement>
+            <ui:VisualElement name="vertical-input" class="row">
+                <ui:Label text="target :" class="target" />
+                <ui:TextField value="180" name="vertical-free-input" class="free-input" />
+                <ui:Label text="°" class="target" />
+                <ui:Label class="hspacer" />
+                <ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Button text="+1" name="vertical-add-one" />
+                        <ui:Button text="+5" name="vertical-add-five" />
+                        <ui:Button text="+10" name="vertical-add-ten" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Button text="-1" name="vertical-minus-one" />
+                        <ui:Button text="-5" name="vertical-minus-five" />
+                        <ui:Button text="-10" name="vertical-minus-ten" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
-

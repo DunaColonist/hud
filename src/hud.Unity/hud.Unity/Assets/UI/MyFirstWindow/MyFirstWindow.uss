@@ -1,18 +1,19 @@
 .root {
-    max-width: 600px;
-    max-height: 400px;
+    width: 400px;
+    height: 360px;
 }
 
 #title-bar {
     justify-content: space-between;
 }
 
-#say-hello-button {
-    margin-top: 16px;
+#title-bar Label {
+    -unity-text-align: upper-center;
+    flex-grow: 1;
 }
 
-#greeting-label {
-    display: none;
+.seperator {
+    -unity-text-align: upper-center;
 }
 
 #icon {
@@ -24,3 +25,25 @@
     margin-bottom: 16px;
 }
 
+.row {
+    flex-direction: row;
+}
+
+.composed-title {
+    flex-direction: row;
+}
+
+.hspacer {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.target {
+    -unity-text-align: middle-left;
+}
+
+.free-input {
+    width: 40px;
+    height: 40px;
+    align-self: center;
+}
