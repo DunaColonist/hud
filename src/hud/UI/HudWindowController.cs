@@ -6,7 +6,7 @@ using UitkForKsp2.API;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class MyFirstWindowController : MonoBehaviour
+public class HudWindowController : MonoBehaviour
 {
     private UIDocument _window;
     private VisualElement _rootElement;

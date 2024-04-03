@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
@@ -54,48 +56,41 @@ public class hudPlugin : BaseSpaceWarpPlugin
         LoadAssemblies();
 
         // Load the UI from the asset bundle
-        var myFirstWindowUxml = AssetManager.GetAsset<VisualTreeAsset>(
+        var hudWindowUxml = AssetManager.GetAsset<VisualTreeAsset>(
             // The case-insensitive path to the asset in the bundle is composed of:
             // - The mod GUID:
             $"{ModGuid}/" +
             // - The name of the asset bundle:
             "hud_ui/" +
             // - The path to the asset in your Unity project (without the "Assets/" part)
-            "ui/myfirstwindow/myfirstwindow.uxml"
+            "ui/hudwindow/hudwindow.uxml"
         );
 
         // Create the window options object
         var windowOptions = new WindowOptions
         {
-            // The ID of the window. It should be unique to your mod.
-            WindowId = "hud_MyFirstWindow",
-            // The transform of parent game object of the window.
-            // If null, it will be created under the main canvas.
+            WindowId = "hud_HudWindow",
             Parent = null,
-            // Whether or not the window can be hidden with F2.
             IsHidingEnabled = true,
-            // Whether to disable game input when typing into text fields.
             DisableGameInputForTextFields = true,
             MoveOptions = new MoveOptions
             {
-                // Whether or not the window can be moved by dragging.
                 IsMovingEnabled = true,
-                // Whether or not the window can only be moved within the screen bounds.
                 CheckScreenBounds = true
             }
         };
 
         // Create the window
-        var myFirstWindow = Window.Create(windowOptions, myFirstWindowUxml);
+        var hudWindow = Window.Create(windowOptions, hudWindowUxml);
         // Add a controller for the UI to the window's game object
-        var myFirstWindowController = myFirstWindow.gameObject.AddComponent<MyFirstWindowController>();
+        var hudWindowController = hudWindow.gameObject.AddComponent<HudWindowController>();
 
         // Register Flight AppBar button
         Appbar.RegisterAppButton(
             ModName,
             ToolbarFlightButtonID,
             AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
-            isOpen => myFirstWindowController.IsWindowOpen = isOpen
+            isOpen => hudWindowController.IsWindowOpen = isOpen
         );
 
         // Register KSC AppBar Button
@@ -103,7 +98,7 @@ public class hudPlugin : BaseSpaceWarpPlugin
             ModName,
             ToolbarKscButtonID,
             AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
-            () => myFirstWindowController.IsWindowOpen = !myFirstWindowController.IsWindowOpen
+            () => hudWindowController.IsWindowOpen = !hudWindowController.IsWindowOpen
         );
 
         Logger.LogInfo("OnInitialized : end");
