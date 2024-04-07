@@ -28,6 +28,8 @@ public class HudWindowController : MonoBehaviour
 
     private void OnEnable()
     {
+        var config = hudPlugin.Instance.HudConfig();
+        
         _window = GetComponent<UIDocument>();
 
         // Get the root element of the window.
@@ -36,6 +38,8 @@ public class HudWindowController : MonoBehaviour
         _rootElement = _window.rootVisualElement[0];
         _rootElement.CenterByDefault();
         ActivateCloseWindow(_rootElement);
+        
+        ActivateToggleDisplay(_rootElement, config);
 
         var partialIds = new List<string>()
         {
@@ -59,6 +63,16 @@ public class HudWindowController : MonoBehaviour
                     { partialId + "-minus-ten", -10 },
                 });
         }
+    }
+
+    private void ActivateToggleDisplay(VisualElement rootElement, HudConfig config)
+    {
+        var toggleDisplay = rootElement.Q<Toggle>("display-toggle");
+        toggleDisplay.value = config.HudIsEnabled.Value;
+        toggleDisplay.RegisterCallback<ChangeEvent<bool>>((evt) =>
+        {
+            config.HudIsEnabled.Value = evt.newValue;
+        });
     }
 
     private void ActivateCloseWindow(VisualElement rootElement)

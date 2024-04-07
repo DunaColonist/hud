@@ -104,6 +104,11 @@ public class hudPlugin : BaseSpaceWarpPlugin
         Logger.LogInfo("OnInitialized : end");
     }
 
+    public HudConfig HudConfig()
+    {
+        return _config;
+    }
+
     private static void LoadAssemblies()
     {
         var currentFolder = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory!.FullName;

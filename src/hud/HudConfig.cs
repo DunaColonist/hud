@@ -2,7 +2,7 @@
 
 namespace hud;
 
-internal class HudConfig
+public class HudConfig
 {
     public ConfigEntry<bool> HudIsEnabled { get; }
 
