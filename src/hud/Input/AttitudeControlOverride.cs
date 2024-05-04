@@ -1,6 +1,6 @@
 ﻿namespace hud.Input;
 
-internal class AttitudeControlOverride
+public class AttitudeControlOverride
 {
     public bool IsEnabled = false;
     public bool AnglesHaveChanged = true;

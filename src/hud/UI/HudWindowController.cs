@@ -1,3 +1,7 @@
+using System.Transactions;
+using hud.Coordinates;
+using hud.Input;
+
 namespace hud.UI;
 
 using KSP.UI.Binding;
@@ -28,31 +32,49 @@ public class HudWindowController : MonoBehaviour
 
     private void OnEnable()
     {
+        UpdateWindowAndRootElement();
+
         var config = hudPlugin.Instance.HudConfig();
-        
-        _window = GetComponent<UIDocument>();
+        var attitudeControlOverride = hudPlugin.Instance.AttitudeControlOverride();
 
-        // Get the root element of the window.
-        // Since we're cloning the UXML tree from a VisualTreeAsset, the actual root element is a TemplateContainer,
-        // so we need to get the first child of the TemplateContainer to get our actual root VisualElement.
-        _rootElement = _window.rootVisualElement[0];
-        _rootElement.CenterByDefault();
         ActivateCloseWindow(_rootElement);
-        
-        ActivateToggleDisplay(_rootElement, config);
 
-        var partialIds = new List<string>()
+        ActivateToggleDisplay(_rootElement, config);
+        ActivateToogleAttitudeControlOverride(_rootElement, attitudeControlOverride);
+        
+        Action<int> setHorizontal = (angle) =>
         {
-            "horizontal",
-            "vertical"
+            var fixedAngle = FixAngle(angle);
+            attitudeControlOverride.HorizontalAngle = fixedAngle;
+            _rootElement.Q<TextField>("horizontal-free-input").value = fixedAngle.ToString();
+        };
+        
+        Action<int> setVertical = (angle) =>
+        {
+            var fixedAngle = FixAngle(angle);
+            attitudeControlOverride.VerticalAngle = fixedAngle;
+            _rootElement.Q<TextField>("vertical-free-input").value = fixedAngle.ToString();
         };
 
-        foreach (var partialId in partialIds)
+        Action<int> incrementHorizontal = (increment) =>
         {
-            ActivateButtons(
+            setHorizontal(attitudeControlOverride.HorizontalAngle + increment);
+        };
+        Action<int> incrementVertical = (increment) =>
+        {
+            setVertical(attitudeControlOverride.VerticalAngle + increment);
+        };
+
+        var partialIds = new Dictionary<string, Action<int>>()
+        {
+            { "horizontal", incrementHorizontal },
+            { "vertical", incrementVertical },
+        };
+
+        foreach (var (partialId, update) in partialIds)
+        {
+            ActivateIncrementButtons(
                 _rootElement,
-                _rootElement.Q<TextField>(partialId + "-free-input"),
-                _rootElement.Q<Label>(partialId + "-value"),
                 new Dictionary<string, int>()
                 {
                     { partialId + "-add-one", 1 },
@@ -61,8 +83,78 @@ public class HudWindowController : MonoBehaviour
                     { partialId + "-minus-one", -1 },
                     { partialId + "-minus-five", -5 },
                     { partialId + "-minus-ten", -10 },
-                });
+                },
+                update
+                );
         }
+
+        var horizontalTargets = new Dictionary<string, Action>()
+        {
+            { "target-north", () => setHorizontal(0) },
+            { "target-east", () => setHorizontal(90) },
+            { "target-south", () => setHorizontal(180) },
+            { "target-west", () => setHorizontal(-90) },
+        };
+
+        foreach (var (buttonId, action) in horizontalTargets)
+        {
+            _rootElement.Q<Button>(buttonId).clicked += action;
+        }
+
+        _rootElement.Q<TextField>("vertical-free-input").value = attitudeControlOverride.VerticalAngle.ToString();
+        _rootElement.Q<TextField>("horizontal-free-input").value = attitudeControlOverride.HorizontalAngle.ToString();
+
+        _rootElement.Q<Button>("set-vertical").clicked += () =>
+        {
+            var input = _rootElement.Q<TextField>("vertical-free-input").value;
+            setVertical(int.Parse(input));
+        };
+        
+        _rootElement.Q<Button>("set-horizontal").clicked += () =>
+        {
+            var input = _rootElement.Q<TextField>("horizontal-free-input").value;
+            setHorizontal(int.Parse(input));
+        };
+
+        _rootElement.Q<Label>("vertical-value").text = attitudeControlOverride.VerticalAngle.ToString();
+        _rootElement.Q<Label>("horizontal-value").text = attitudeControlOverride.HorizontalAngle.ToString();
+    }
+    
+    private void OnGUI()
+    {
+        var vessel = KSP.Game.GameManager.Instance.Game.ViewController.GetActiveSimVessel();
+        LocalCoordinates coord = null;
+        if (vessel is not null)
+        {
+            coord = new LocalCoordinates(vessel);
+
+            _rootElement.Q<Label>("vertical-value").text = coord.VerticalAngle.ToString();
+            _rootElement.Q<Label>("horizontal-value").text = coord.HorizontalAngle.ToString();
+        }
+    }
+
+    private int FixAngle(int Angle)
+    {
+        switch (Angle)
+        {
+            case > 180:
+                return Angle - 360;
+            case < -180:
+                return Angle + 360;
+            default:
+                return Angle;
+        }
+    }
+
+    private void UpdateWindowAndRootElement()
+    {
+        _window = GetComponent<UIDocument>();
+
+        // Get the root element of the window.
+        // Since we're cloning the UXML tree from a VisualTreeAsset, the actual root element is a TemplateContainer,
+        // so we need to get the first child of the TemplateContainer to get our actual root VisualElement.
+        _rootElement = _window.rootVisualElement[0];
+        _rootElement.CenterByDefault();
     }
 
     private void ActivateToggleDisplay(VisualElement rootElement, HudConfig config)
@@ -75,24 +167,27 @@ public class HudWindowController : MonoBehaviour
         });
     }
 
+    private void ActivateToogleAttitudeControlOverride(VisualElement rootElement, AttitudeControlOverride attitudeControlOverride)
+    {
+        var toggleAttitude = rootElement.Q<Toggle>("attitude-toggle");
+        toggleAttitude.value = attitudeControlOverride.IsEnabled;
+        toggleAttitude.RegisterCallback<ChangeEvent<bool>>((evt) =>
+        {
+            attitudeControlOverride.IsEnabled = evt.newValue;
+        });
+    }
+
     private void ActivateCloseWindow(VisualElement rootElement)
     {
         var closeButton = rootElement.Q<Button>("close-button");
         closeButton.clicked += () => IsWindowOpen = false;
     }
 
-    private void ActivateButtons(VisualElement rootElement, TextField source, Label destination, Dictionary<string, int> increments)
+    private void ActivateIncrementButtons(VisualElement rootElement, Dictionary<string, int> increments, Action<int> update)
     {
         foreach (var (buttonId, increment) in increments)
         {
-            rootElement.Q<Button>(buttonId).clicked += () => UpdateValue(source, destination, increment);
+            rootElement.Q<Button>(buttonId).clicked += () => update(increment);
         }
-    }
-
-    private void UpdateValue(TextField source, Label destination, int increment)
-    {
-        var input = source.value;
-        var angle = int.Parse(input) + increment;
-        destination.text = angle.ToString();
     }
 }

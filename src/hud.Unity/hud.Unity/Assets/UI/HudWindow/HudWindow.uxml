@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/HudWindow/HudWindow.uss?fileID=7433441132597879392&amp;guid=f49119c0dc6aec7469a0374f7f606ceb&amp;type=3#HudWindow" />
+    <Style src="project://database/Assets/UI/HudWindow/HudWindow.uss?fileID=7433441132597879392&amp;guid=2031e4bda9a60564598ab923294d163b&amp;type=3#HudWindow" />
     <ui:VisualElement name="VisualElement" class="root">
         <ui:VisualElement name="title-bar">
             <ui:Label text="HUD : Head Up Display" />
@@ -21,15 +21,16 @@
                 <ui:Label text="----------" />
             </ui:VisualElement>
             <ui:VisualElement class="row">
-                <ui:Button text="North" />
-                <ui:Button text="East" />
-                <ui:Button text="South" />
-                <ui:Button text="West" />
+                <ui:Button name="target-north" text="North" />
+                <ui:Button name="target-east" text="East" />
+                <ui:Button name="target-south" text="South" />
+                <ui:Button name="target-west" text="West" />
             </ui:VisualElement>
             <ui:VisualElement name="horizontal-input" class="row">
                 <ui:Label text="target :" class="target" />
-                <ui:TextField picking-mode="Ignore" value="180" name="horizontal-free-input" class="free-input" />
+                <ui:TextField picking-mode="Ignore" name="horizontal-free-input" class="free-input" />
                 <ui:Label text="°" class="target" />
+                <ui:Button text="=" name="set-horizontal" class="setter" />
                 <ui:Label class="hspacer" />
                 <ui:VisualElement>
                     <ui:VisualElement class="row">
@@ -55,8 +56,9 @@
             </ui:VisualElement>
             <ui:VisualElement name="vertical-input" class="row">
                 <ui:Label text="target :" class="target" />
-                <ui:TextField value="180" name="vertical-free-input" class="free-input" />
+                <ui:TextField name="vertical-free-input" class="free-input" />
                 <ui:Label text="°" class="target" />
+                <ui:Button text="=" name="set-vertical" class="setter" />
                 <ui:Label class="hspacer" />
                 <ui:VisualElement>
                     <ui:VisualElement class="row">

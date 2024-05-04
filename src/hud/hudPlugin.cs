@@ -108,6 +108,11 @@ public class hudPlugin : BaseSpaceWarpPlugin
     {
         return _config;
     }
+    
+    public AttitudeControlOverride AttitudeControlOverride()
+    {
+        return _controlOverride;
+    }
 
     private static void LoadAssemblies()
     {
